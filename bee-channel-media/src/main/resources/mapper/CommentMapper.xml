@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beechannel.media.mapper.CommentMapper">
+
+    <resultMap id="BaseResultMap" type="com.beechannel.media.domain.po.Comment">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="deriveId" column="derive_id" jdbcType="BIGINT"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="userFromId" column="user_from_id" jdbcType="BIGINT"/>
+            <result property="userToId" column="user_to_id" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="hasRead" column="has_read" jdbcType="INTEGER"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,derive_id,type,
+        user_from_id,user_to_id,create_time,
+        has_read,content,parent_id
+    </sql>
+
+    <sql id="Comment_Page">
+        id,derive_id,type,
+        user_from_id,user_to_id,create_time,
+        content
+    </sql>
+
+    <select id="getCommentPageByVideoId"
+            resultType="com.beechannel.media.domain.dto.ParentCommentNode">
+        SELECT id,
+               derive_id,
+               type,
+               user_from_id,
+               user_to_id,
+               create_time,
+               content,
+               IFNULL(children_count, 0) children_count
+        FROM (SELECT <include refid="Comment_Page"></include> FROM `comment` WHERE derive_id = #{videoId} AND type = 0 AND parent_id = 0) parent_node
+              LEFT JOIN
+             (SELECT parent_id, COUNT(parent_id) children_count FROM `comment` WHERE derive_id = #{videoId} AND type = 0 AND parent_id != 0 GROUP BY parent_id) children_node
+             ON parent_node.id = children_node.parent_id
+    </select>
+</mapper>

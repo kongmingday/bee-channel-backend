@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: auth-service
+  cloud:
+    nacos:
+      server-addr: 192.168.25.128:8848
+      discovery:
+        namespace: d8851b93-2d37-4b2f-a5f0-bead6e8a087c
+        group: bee-channel-project
+      config:
+        namespace: d8851b93-2d37-4b2f-a5f0-bead6e8a087c
+        group: bee-channel-project
+        file-extension: yaml
+        refresh-enabled: true
+        shared-configs:
+          - data-id: swagger-${spring.profiles.active}.yaml
+            group: bee-channel-common
+            refresh: true
+          - data-id: logging-${spring.profiles.active}.yaml
+            group: bee-channel-common
+            refresh: true
+          - data-id: feign-${spring.profiles.active}.yaml
+            group: bee-channel-common
+            refresh: true
+          - data-id: redis-${spring.profiles.active}.yaml
+            group: bee-channel-common
+            refresh: true
+
+  profiles:
+    active: dev

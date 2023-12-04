@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beechannel.media.mapper.VideoMapper">
+
+    <resultMap id="BaseResultMap" type="com.beechannel.media.domain.po.Video">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="author_id" column="author_id" jdbcType="BIGINT"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="introduction" column="introduction" jdbcType="VARCHAR"/>
+            <result property="tag" column="tag" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="category_id" column="category_id" jdbcType="INTEGER"/>
+            <result property="cover_path" column="cover_path" jdbcType="VARCHAR"/>
+            <result property="save_path" column="save_path" jdbcType="VARCHAR"/>
+            <result property="liked" column="liked" jdbcType="INTEGER"/>
+            <result property="unliked" column="unliked" jdbcType="INTEGER"/>
+            <result property="up_time" column="up_time" jdbcType="TIMESTAMP"/>
+            <result property="public_time" column="public_time" jdbcType="TIMESTAMP"/>
+            <result property="saw_time" column="saw_time" jdbcType="BIGINT"/>
+            <result property="clicked_count" column="clicked_count" jdbcType="INTEGER"/>
+            <result property="save_id" column="save_id" jdbcType="BIGINT"/>
+            <result property="cover_id" column="cover_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,author_id,title,
+        introduction,tag,status,
+        category_id,cover_path,save_path,
+        liked,unliked,up_time,
+        public_time,saw_time,clicked_count,
+        save_id,cover_id
+    </sql>
+</mapper>
