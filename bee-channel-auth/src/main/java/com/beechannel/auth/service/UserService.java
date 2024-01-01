@@ -1,6 +1,5 @@
 package com.beechannel.auth.service;
 
-import com.beechannel.auth.domain.dto.FullUser;
 import com.beechannel.auth.domain.dto.SignUpParams;
 import com.beechannel.base.domain.po.User;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -32,13 +31,4 @@ public interface UserService extends IService<User> {
      */
     boolean enableAccount(String email, String token);
 
-    /**
-     * @param userId
-     * @param currentId
-     * @return com.beechannel.auth.domain.dto.FullUser
-     * @description get full user's information
-     * @author eotouch
-     * @date 2023-12-03 16:12
-     */
-    FullUser getFullInfoById(Long userId, Long currentId);
 }

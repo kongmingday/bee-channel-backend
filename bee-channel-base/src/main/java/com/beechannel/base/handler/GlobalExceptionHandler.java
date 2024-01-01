@@ -1,5 +1,7 @@
 package com.beechannel.base.handler;
 
+import com.beechannel.base.domain.vo.RestResponse;
+import com.beechannel.base.exception.AcceptException;
 import com.beechannel.base.exception.BeeChannelException;
 import com.beechannel.base.exception.RestErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -15,65 +17,72 @@ import java.util.List;
 import static com.beechannel.base.exception.CommonError.UNKNOWN_ERROR;
 
 /**
- * @description 全局异常处理器
  * @author eotouch
- * @date 2022/9/6 11:29
  * @version 1.0
+ * @description 全局异常处理器
+ * @date 2022/9/6 11:29
  */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	// Custom system exception
-	@ExceptionHandler(BeeChannelException.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public RestErrorResponse doXueChengPlusException(BeeChannelException e) {
-		log.error("process error",e.getErrMessage(),e);
-		return RestErrorResponse.of(e.getErrMessage());
-	}
+    // Custom system exception
+    @ExceptionHandler({BeeChannelException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public RestErrorResponse doBeeChannelException(BeeChannelException e) {
+        log.error("process error", e.getErrMessage(), e);
+        return RestErrorResponse.of(e.getErrMessage());
+    }
 
-	// Argument not vail exception
-	@ExceptionHandler(value = MethodArgumentNotValidException.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public RestErrorResponse doValidException(MethodArgumentNotValidException argumentNotValidException) {
+    // Custom accepted exception
+    @ExceptionHandler({AcceptException.class})
+    @ResponseStatus(HttpStatus.OK)
+    public RestResponse doAcceptedException(AcceptException e) {
+        return RestResponse.success(e.isResult());
+    }
 
-		BindingResult bindingResult = argumentNotValidException.getBindingResult();
-		StringBuffer errMsg = new StringBuffer();
+    // Argument not vail exception
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public RestErrorResponse doValidException(MethodArgumentNotValidException argumentNotValidException) {
 
-		List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-		fieldErrors.forEach(error -> {
-			errMsg.append(error.getDefaultMessage()).append(",");
-		});
-		log.error(errMsg.toString());
-		return RestErrorResponse.of(errMsg.toString());
-	}
+        BindingResult bindingResult = argumentNotValidException.getBindingResult();
+        StringBuffer errMsg = new StringBuffer();
 
-	@ExceptionHandler(value = BindException.class)
-	public RestErrorResponse exceptionHandle(BindException exception) {
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+        fieldErrors.forEach(error -> {
+            errMsg.append(error.getDefaultMessage()).append(",");
+        });
+        log.error(errMsg.toString());
+        return RestErrorResponse.of(errMsg.toString());
+    }
 
-		BindingResult result = exception.getBindingResult();
-		StringBuilder errorMsg = new StringBuilder();
+    @ExceptionHandler(value = BindException.class)
+    public RestErrorResponse exceptionHandle(BindException exception) {
 
-		List<FieldError> fieldErrors = result.getFieldErrors();
-		fieldErrors.forEach(error -> {
-			log.error("field: " + error.getField() + ", msg:" + error.getDefaultMessage());
-			errorMsg.append(error.getDefaultMessage()).append("!");
-		});
-		return RestErrorResponse.of(errorMsg.toString());
-	}
+        BindingResult result = exception.getBindingResult();
+        StringBuilder errorMsg = new StringBuilder();
 
-
-	@ExceptionHandler(Exception.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public RestErrorResponse exception(Exception e) {
-
-		log.error("undefined error",e.getMessage(),e);
-		e.printStackTrace();
-		if(e.getMessage().equals("不允许访问")){
-			return RestErrorResponse.of("no process permission");
-		}
-		return RestErrorResponse.of(UNKNOWN_ERROR.getErrMessage());
+        List<FieldError> fieldErrors = result.getFieldErrors();
+        fieldErrors.forEach(error -> {
+            log.error("field: " + error.getField() + ", msg:" + error.getDefaultMessage());
+            errorMsg.append(error.getDefaultMessage()).append("!");
+        });
+        return RestErrorResponse.of(errorMsg.toString());
+    }
 
 
-	}
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public RestErrorResponse exception(Exception e) {
+
+        log.error("undefined error", e.getMessage(), e);
+        e.printStackTrace();
+        if (e.getMessage().equals("不允许访问")) {
+            return RestErrorResponse.of("no process permission");
+        }
+        return RestErrorResponse.of(UNKNOWN_ERROR.getErrMessage());
+
+
+    }
 }

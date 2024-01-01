@@ -7,7 +7,7 @@
     <resultMap id="BaseResultMap" type="com.beechannel.media.domain.po.Comment">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="deriveId" column="derive_id" jdbcType="BIGINT"/>
-            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="deriveType" column="derive_type" jdbcType="INTEGER"/>
             <result property="userFromId" column="user_from_id" jdbcType="BIGINT"/>
             <result property="userToId" column="user_to_id" jdbcType="BIGINT"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
@@ -17,30 +17,89 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,derive_id,type,
+        id,derive_id,derive_type,
         user_from_id,user_to_id,create_time,
         has_read,content,parent_id
     </sql>
 
     <sql id="Comment_Page">
-        id,derive_id,type,
+        id,derive_id,derive_type,
         user_from_id,user_to_id,create_time,
         content
     </sql>
 
+    <delete id="deleteByParentId">
+        DELETE `comment`
+        FROM `comment`,
+             (SELECT id
+              FROM `comment`
+              WHERE id = #{parentId}
+              UNION
+              SELECT id
+              FROM `comment`
+              WHERE parent_id = #{parentId}) id_list
+        WHERE `comment`.id = id_list.id
+    </delete>
+
     <select id="getCommentPageByVideoId"
-            resultType="com.beechannel.media.domain.dto.ParentCommentNode">
+            resultType="com.beechannel.media.domain.dto.CommentNode">
         SELECT id,
-               derive_id,
-               type,
-               user_from_id,
-               user_to_id,
-               create_time,
-               content,
-               IFNULL(children_count, 0) children_count
-        FROM (SELECT <include refid="Comment_Page"></include> FROM `comment` WHERE derive_id = #{videoId} AND type = 0 AND parent_id = 0) parent_node
-              LEFT JOIN
-             (SELECT parent_id, COUNT(parent_id) children_count FROM `comment` WHERE derive_id = #{videoId} AND type = 0 AND parent_id != 0 GROUP BY parent_id) children_node
-             ON parent_node.id = children_node.parent_id
+        derive_id,
+        derive_type,
+        user_from_id,
+        user_to_id,
+        create_time,
+        content,
+        IFNULL(like_count, 0) like_count,
+        <if test="currentUserId != null">lk.favorite_type,</if>
+        IFNULL(children_count, 0) children_count
+        FROM (SELECT <include refid="Comment_Page"></include> FROM `comment` WHERE derive_id = #{videoId} AND
+        derive_type = 0
+        AND parent_id = 0) parent_node
+        LEFT JOIN
+        (SELECT parent_id, COUNT(*) children_count FROM `comment` WHERE derive_id = #{videoId} AND
+        parent_id != 0 GROUP BY parent_id) children_node
+        ON parent_node.id = children_node.parent_id
+        <if test="currentUserId != null">
+            LEFT JOIN
+            ( SELECT derive_id lk_id, favorite_type FROM `like_list` WHERE derive_type = 2 and user_from_id =
+            #{currentUserId}) lk
+            ON lk.lk_id = parent_node.id
+        </if>
+        LEFT JOIN ( SELECT derive_id lk_id, count(*) like_count FROM `like_list` WHERE derive_type = 2 AND favorite_type = 1 GROUP BY
+        derive_id ) count_list
+        ON parent_node.id = count_list.lk_id
+        ORDER BY
+        <choose>
+            <when test="orderBy == 0">
+                like_count DESC
+            </when>
+            <when test="orderBy == 1">
+                create_time DESC
+            </when>
+        </choose>
+    </select>
+
+    <select id="getChildrenCommentByParentId"
+            resultType="com.beechannel.media.domain.dto.CommentNode">
+        SELECT id,
+        derive_id,
+        derive_type,
+        user_from_id,
+        user_to_id,
+        create_time,
+        content,
+        <if test="currentUserId != null">lk.favorite_type,</if>
+        IFNULL(like_count, 0) like_count
+        FROM (SELECT <include refid="Base_Column_List"></include>  FROM `comment` WHERE derive_type = 0 AND parent_id =
+        #{parentId}) children_node
+        <if test="currentUserId != null">
+            LEFT JOIN (SELECT derive_id lk_id, favorite_type FROM `like_list` WHERE derive_type = 2 AND user_from_id = #{currentUserId}) lk
+            ON lk.lk_id = children_node.id
+        </if>
+        LEFT JOIN ( SELECT derive_id lk_id, count(*) like_count FROM `like_list` WHERE derive_type = 2 AND favorite_type = 1 GROUP BY
+        derive_id ) count_list
+        ON children_node.id = count_list.lk_id
+        ORDER BY create_time ASC
     </select>
 </mapper>

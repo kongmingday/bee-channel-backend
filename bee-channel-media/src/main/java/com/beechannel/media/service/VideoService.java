@@ -1,5 +1,6 @@
 package com.beechannel.media.service;
 
+import com.beechannel.base.domain.vo.PageParams;
 import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.media.domain.po.Video;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -19,4 +20,6 @@ public interface VideoService extends IService<Video> {
      * @date 2023-11-30 21:13
      */
     RestResponse getVideoInfo(Long videoId);
+
+    RestResponse getPersonalVideoList(PageParams pageParams);
 }

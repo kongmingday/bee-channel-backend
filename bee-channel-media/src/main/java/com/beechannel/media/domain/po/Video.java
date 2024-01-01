@@ -69,17 +69,6 @@ public class Video implements Serializable {
     @TableField(value = "save_path")
     private String savePath;
 
-    /**
-     * 视频被点赞数
-     */
-    @TableField(value = "liked")
-    private Integer liked;
-
-    /**
-     * 视频被点踩数
-     */
-    @TableField(value = "unliked")
-    private Integer unliked;
 
     /**
      * 视频上传时间

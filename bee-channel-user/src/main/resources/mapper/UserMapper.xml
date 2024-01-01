@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beechannel.user.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.beechannel.base.domain.po.User">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="wxUnionId" column="wx_union_id" jdbcType="VARCHAR"/>
+            <result property="profile" column="profile" jdbcType="VARCHAR"/>
+            <result property="background" column="background" jdbcType="VARCHAR"/>
+            <result property="introduction" column="introduction" jdbcType="VARCHAR"/>
+            <result property="birthday" column="birthday" jdbcType="TIMESTAMP"/>
+            <result property="gender" column="gender" jdbcType="INTEGER"/>
+            <result property="email" column="email" jdbcType="VARCHAR"/>
+            <result property="phone" column="phone" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,username,password,
+        wx_union_id,profile,
+        background,introduction,birthday,
+        gender,email,phone,
+        create_time,status
+    </sql>
+
+    <sql id="Target_User">
+        target_user.id,username,password,
+        wx_union_id,profile,
+        background,introduction,birthday,
+        gender,email,phone,
+        target_user.create_time,status
+    </sql>
+
+    <select id="getFullInfoByUserId" resultType="com.beechannel.user.domain.dto.FullUser">
+        SELECT <include refid="Target_User"></include>,
+        count(concern.id) subscribeCount
+        FROM (
+            SELECT <include refid="Base_Column_List"></include> FROM `user` WHERE id = #{userId}
+        ) target_user
+        LEFT JOIN concern ON target_user.id = concern.user_to_id
+    </select>
+
+
+</mapper>

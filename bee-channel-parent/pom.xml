@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>../bee-channel-user</module>
         <module>../bee-channel-auth</module>
         <module>../bee-channel-gateway</module>
         <module>../bee-channel-base</module>
@@ -40,6 +41,7 @@
         <swagger-spring-boot-starter.version>1.9.0.RELEASE</swagger-spring-boot-starter.version>
         <elasticsearch.version>7.12.1</elasticsearch.version>
         <spring-security.version>5.3.6.RELEASE</spring-security.version>
+        <seata.version>2.2.7.RELEASE</seata.version>
     </properties>
 
     <dependencyManagement>
@@ -179,6 +181,13 @@
                 <artifactId>spring-security-core</artifactId>
                 <version>${spring-security.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+                <version>${seata.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     <build>

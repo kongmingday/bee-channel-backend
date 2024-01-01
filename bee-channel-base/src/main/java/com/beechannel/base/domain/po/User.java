@@ -34,7 +34,7 @@ public class User implements Serializable {
      * 用户密码
      */
     @JsonIgnore
-    @JSONField(deserialize = false)
+    @JSONField(serialize = false)
     @TableField(value = "password")
     private String password;
 
@@ -71,8 +71,8 @@ public class User implements Serializable {
     /**
      * 用户性别 0-female 1-male
      */
-    @TableField(value = "sex")
-    private Integer sex;
+    @TableField(value = "gender")
+    private Integer gender;
 
     /**
      * 用户邮箱

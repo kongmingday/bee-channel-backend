@@ -18,7 +18,7 @@ public class Comment implements Serializable {
     /**
      * 评论表Id
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
@@ -30,8 +30,8 @@ public class Comment implements Serializable {
     /**
      * 评论媒体来源类型 0-视频, 1-动态
      */
-    @TableField(value = "type")
-    private Integer type;
+    @TableField(value = "derive_type")
+    private Integer deriveType;
 
     /**
      * 评论用户Id
@@ -69,17 +69,6 @@ public class Comment implements Serializable {
     @TableField(value = "parent_id")
     private Long parentId;
 
-    /**
-     * 点赞数量
-     */
-    @TableField(value = "like_count")
-    private Long likeCount;
-
-    /**
-     * 点踩数量
-     */
-    @TableField(value = "unlike_count")
-    private Long unlikeCount;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

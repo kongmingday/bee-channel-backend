@@ -9,14 +9,15 @@ import lombok.Getter;
  * @Version 1.0
  */
 @Getter
-public enum CommentDeriveType {
+public enum DeriveType {
     VIDEO(0, "video"),
-    DYNAMIC(1, "dynamic");
+    DYNAMIC(1, "dynamic"),
+    COMMENT(2, "comment");
 
-    private final int code;
+    private final Integer code;
     private final String name;
 
-    CommentDeriveType(int code, String name) {
+    DeriveType(Integer code, String name) {
         this.code = code;
         this.name = name;
     }

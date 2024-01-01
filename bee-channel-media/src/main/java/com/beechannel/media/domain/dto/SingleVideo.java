@@ -4,6 +4,7 @@ import com.beechannel.media.domain.po.Video;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Description video's information with author's message
@@ -19,4 +20,10 @@ public class SingleVideo extends Video implements Serializable {
     private FullUser author;
 
     private Long commentCount;
+
+    private Integer likeCount;
+
+    private Integer unlikeCount;
+
+    private Integer favoriteType;
 }

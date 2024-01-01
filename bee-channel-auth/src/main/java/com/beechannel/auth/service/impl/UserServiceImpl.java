@@ -2,9 +2,7 @@ package com.beechannel.auth.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.beechannel.auth.domain.dto.FullUser;
 import com.beechannel.auth.domain.dto.SignUpParams;
-import com.beechannel.auth.domain.po.Concern;
 import com.beechannel.auth.domain.po.UserRole;
 import com.beechannel.auth.feign.CheckCodeClient;
 import com.beechannel.auth.mapper.ConcernMapper;
@@ -49,8 +47,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private UserMapper userMapper;
 
-    @Resource
-    private ConcernMapper concernMapper;
 
     /**
      * @description user register
@@ -121,43 +117,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return flag;
     }
 
-
-    /**
-     * @description get full user's information
-     * @param userId target user's id
-     * @param currentId current user's id
-     * @return com.beechannel.auth.domain.dto.FullUser
-     * @author eotouch
-     * @date 2023-12-03 16:12
-     */
-    @Override
-    public FullUser getFullInfoById(Long userId, Long currentId) {
-        FullUser fullUser = userMapper.getFullInfoByUserId(userId);
-        if(currentId != null){
-            boolean relationship = getRelationship(userId, currentId);
-            fullUser.setHasConcern(relationship);
-        }
-        return fullUser;
-    }
-
-
-    /**
-     * @description get relationship from userFrom to userTO
-     *              if true, has concerned
-     *              or false, hasn't concerned
-     * @param userFromId
-     * @param userToId
-     * @return boolean
-     * @author eotouch
-     * @date 2023-12-03 16:34
-     */
-    public boolean getRelationship(Long userFromId, Long userToId){
-        LambdaQueryWrapper<Concern> concernQuery = new LambdaQueryWrapper<>();
-        concernQuery.eq(Concern::getUserFromId, userFromId);
-        concernQuery.eq(Concern::getUserToId, userToId);
-        int count = concernMapper.selectCount(concernQuery);
-        return count > 0;
-    }
 }
 
 

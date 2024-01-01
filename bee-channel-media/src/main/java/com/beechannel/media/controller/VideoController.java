@@ -3,6 +3,7 @@ package com.beechannel.media.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.beechannel.base.domain.po.User;
+import com.beechannel.base.domain.vo.PageParams;
 import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.media.constant.VideoStatus;
 import com.beechannel.media.domain.dto.FullUser;
@@ -11,10 +12,7 @@ import com.beechannel.media.domain.po.Video;
 import com.beechannel.media.feign.UserClient;
 import com.beechannel.media.service.VideoService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -41,7 +39,6 @@ public class VideoController {
         return videoService.getVideoInfo(videoId);
     }
 
-
     @GetMapping
     public RestResponse getRecommendByCategory(Integer categoryId){
         LambdaQueryWrapper<Video> videoQuery = new LambdaQueryWrapper<>();
@@ -65,6 +62,11 @@ public class VideoController {
         }).collect(Collectors.toList());
 
         return RestResponse.success(collect);
+    }
+
+    @GetMapping("/personal")
+    public RestResponse getPersonalVideoList(PageParams pageParams){
+        return videoService.getPersonalVideoList(pageParams);
     }
 
 }

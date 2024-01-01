@@ -49,7 +49,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 // .antMatchers("/auth/**").authenticated() // 访问/auth开始的请求需要认证通过
-                .antMatchers("/test").permitAll()
                 .anyRequest().permitAll() // 其它请求全部放行
                 .and()
                 .csrf().disable()

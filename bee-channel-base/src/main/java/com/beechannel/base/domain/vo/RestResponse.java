@@ -15,7 +15,7 @@ import lombok.ToString;
 public class RestResponse<T> {
 
     /**
-     * 响应编码,0为正常,-1错误
+     * 响应编码,200为正常,-1错误
      */
     private int code;
 
@@ -53,6 +53,12 @@ public class RestResponse<T> {
         return response;
     }
 
+    public static <T> RestResponse<T> validFail() {
+        RestResponse<T> response = new RestResponse<T>();
+        response.setCode(-1);
+        return response;
+    }
+
     public static <T> RestResponse<T> validFail(int code, String msg) {
         RestResponse<T> response = new RestResponse<T>();
         response.setCode(code);
@@ -82,6 +88,7 @@ public class RestResponse<T> {
 
     public static <T> RestResponse<T> success(T result) {
         RestResponse<T> response = new RestResponse<T>();
+        response.setMsg("request success");
         response.setResult(result);
         return response;
     }
@@ -89,7 +96,7 @@ public class RestResponse<T> {
     public static <T> RestResponse<T> success(T result, String msg) {
         RestResponse<T> response = new RestResponse<T>();
         response.setResult(result);
-        response.setMsg(msg);
+        response.setMsg(msg == null ? "request success" : msg);
         return response;
     }
 

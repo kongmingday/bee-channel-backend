@@ -1,5 +1,6 @@
 package com.beechannel.media.domain.dto;
 
+import com.beechannel.base.domain.po.User;
 import com.beechannel.media.domain.po.Comment;
 import lombok.Data;
 
@@ -12,8 +13,11 @@ import java.io.Serializable;
  * @Version 1.0
  */
 @Data
-public class ParentCommentNode extends Comment implements Serializable {
+public class CommentNode extends Comment implements Serializable {
     private static final long serialVersionUID = 1L;
-
+    private User fromUser;
+    private User toUser;
     private Integer childrenCount;
+    private Integer likeCount;
+    private Integer favoriteType;
 }

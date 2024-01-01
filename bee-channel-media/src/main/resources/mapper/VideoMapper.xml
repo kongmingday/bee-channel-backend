@@ -6,30 +6,87 @@
 
     <resultMap id="BaseResultMap" type="com.beechannel.media.domain.po.Video">
             <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="author_id" column="author_id" jdbcType="BIGINT"/>
+            <result property="authorId" column="author_id" jdbcType="BIGINT"/>
             <result property="title" column="title" jdbcType="VARCHAR"/>
             <result property="introduction" column="introduction" jdbcType="VARCHAR"/>
             <result property="tag" column="tag" jdbcType="VARCHAR"/>
             <result property="status" column="status" jdbcType="INTEGER"/>
-            <result property="category_id" column="category_id" jdbcType="INTEGER"/>
-            <result property="cover_path" column="cover_path" jdbcType="VARCHAR"/>
-            <result property="save_path" column="save_path" jdbcType="VARCHAR"/>
-            <result property="liked" column="liked" jdbcType="INTEGER"/>
-            <result property="unliked" column="unliked" jdbcType="INTEGER"/>
-            <result property="up_time" column="up_time" jdbcType="TIMESTAMP"/>
-            <result property="public_time" column="public_time" jdbcType="TIMESTAMP"/>
-            <result property="saw_time" column="saw_time" jdbcType="BIGINT"/>
-            <result property="clicked_count" column="clicked_count" jdbcType="INTEGER"/>
-            <result property="save_id" column="save_id" jdbcType="BIGINT"/>
-            <result property="cover_id" column="cover_id" jdbcType="BIGINT"/>
+            <result property="categoryId" column="category_id" jdbcType="INTEGER"/>
+            <result property="coverPath" column="cover_path" jdbcType="VARCHAR"/>
+            <result property="savePath" column="save_path" jdbcType="VARCHAR"/>
+            <result property="upTime" column="up_time" jdbcType="TIMESTAMP"/>
+            <result property="publicTime" column="public_time" jdbcType="TIMESTAMP"/>
+            <result property="sawTime" column="saw_time" jdbcType="BIGINT"/>
+            <result property="clickedCount" column="clicked_count" jdbcType="INTEGER"/>
+            <result property="saveId" column="save_id" jdbcType="BIGINT"/>
+            <result property="coverId" column="cover_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <resultMap id="AuditVideo" type="com.beechannel.media.domain.dto.AuditVideoItem">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="introduction" column="introduction" jdbcType="VARCHAR"/>
+        <result property="tag" column="tag" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="coverPath" column="cover_path" jdbcType="VARCHAR"/>
+        <result property="savePath" column="save_path" jdbcType="VARCHAR"/>
+        <result property="upTime" column="up_time" jdbcType="TIMESTAMP"/>
+        <result property="publicTime" column="public_time" jdbcType="TIMESTAMP"/>
+        <result property="categoryId" column="category_id" jdbcType="INTEGER"/>
+        <association property="supervise" javaType="com.beechannel.media.domain.po.Supervise" >
+            <id property="id" column="supervise_id" jdbcType="BIGINT"/>
+            <result property="superviseTime" column="supervise_time" jdbcType="TIMESTAMP"/>
+            <result property="status" column="sp_status" jdbcType="INTEGER"/>
+            <result property="reason" column="reason"/>
+        </association>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,author_id,title,
         introduction,tag,status,
         category_id,cover_path,save_path,
-        liked,unliked,up_time,
+        like_count,unlike_count,up_time,
         public_time,saw_time,clicked_count,
-        save_id,cover_id
+        save_id,
+        <if test="currentUserId != null">
+            favorite_type,
+        </if>
+        cover_id
     </sql>
+
+    <select id="getFullVideoInfo" resultType="com.beechannel.media.domain.dto.SingleVideo">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM (SELECT * FROM `video` WHERE id = #{videoId}) target
+            <choose>
+                <when test="currentUserId != null">
+                    LEFT JOIN (SELECT derive_id, favorite_type FROM `like_list` WHERE derive_type = 0 AND user_from_id = #{currentUserId}) lk
+                    ON target.id = lk.derive_id,
+                </when>
+            <otherwise>
+                ,
+            </otherwise>
+            </choose>
+        (SELECT count(*) like_count FROM like_list WHERE derive_type = 0 AND derive_id = #{videoId} AND favorite_type = 1) like_count,
+        (SELECT count(*) unlike_count FROM like_list WHERE derive_type = 0 AND derive_id = #{videoId} AND favorite_type = 1) unlike_count
+    </select>
+
+    <select id="getPersonalVideoList" resultMap="AuditVideo">
+        SELECT
+            target_list.id,
+            target_list.title,
+            target_list.introduction,
+            target_list.cover_path,
+            target_list.save_path,
+            target_list.up_time,
+            target_list.public_time,
+            target_list.category_id,
+            supervise.id supervise_id,
+            supervise.`status` sp_status,
+            reason,
+            supervise_time
+        FROM
+            ( SELECT id, title, introduction, cover_path, save_path, up_time, public_time, category_id FROM `video` WHERE author_id = #{currentUserId} ) target_list
+                LEFT JOIN supervise ON target_list.id = supervise.video_id
+    </select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.beechannel.media.feign.factory;
 
+import com.beechannel.base.constant.InnerRpcStatus;
 import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.base.feign.AbstractFeignFactory;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author eotouch
@@ -34,13 +37,19 @@ public class UserClientFactory implements FallbackFactory<UserClient> {
         @Override
         public RestResponse<User> getUserInfo(Long userId) {
             super.rpcFail(throwable);
-            return RestResponse.validFail("rpc error");
+            return RestResponse.validFail(InnerRpcStatus.ERROR.getDescription());
         }
 
         @Override
         public RestResponse<FullUser> getFullUserInfo(Long userId, Long currentId) {
             super.rpcFail(throwable);
-            return RestResponse.validFail("rpc error");
+            return RestResponse.validFail(InnerRpcStatus.ERROR.getDescription());
+        }
+
+        @Override
+        public RestResponse<List<User>> getUserInfoByIdList(List<Long> idList) {
+            super.rpcFail(throwable);
+            return RestResponse.validFail(InnerRpcStatus.ERROR.getDescription());
         }
     }
 
