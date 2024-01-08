@@ -1,4 +1,4 @@
-package com.beechannel.media.constant;
+package com.beechannel.base.constant;
 
 import lombok.Getter;
 
@@ -9,16 +9,16 @@ import lombok.Getter;
  * @Version 1.0
  */
 @Getter
-public enum VideoStatus {
+public enum AuditStatus {
 
     UNREVIEWED(0, "unreviewed"),
-    UNAPPROVED(1, "unapprove"),
+    UNAPPROVED(1, "unapproved"),
     APPROVE(2, "approve");
 
     private int id;
     private String message;
 
-    VideoStatus(int id, String message) {
+    AuditStatus(int id, String message) {
         this.id = id;
         this.message = message;
     }

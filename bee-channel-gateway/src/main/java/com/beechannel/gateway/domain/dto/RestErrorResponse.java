@@ -1,4 +1,4 @@
-package com.beechannel.gateway.config;
+package com.beechannel.gateway.domain.dto;
 
 import java.io.Serializable;
 

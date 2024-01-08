@@ -4,29 +4,28 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.beechannel.base.constant.CommonConstant;
+import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.base.domain.vo.PageParams;
 import com.beechannel.base.domain.vo.PageResult;
 import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.base.exception.BeeChannelException;
 import com.beechannel.base.util.SecurityUtil;
 import com.beechannel.media.constant.DeriveType;
-import com.beechannel.media.constant.PublishingStatus;
 import com.beechannel.media.domain.dto.AuditVideoItem;
-import com.beechannel.media.domain.dto.FullUser;
 import com.beechannel.media.domain.dto.SingleVideo;
 import com.beechannel.media.domain.po.Comment;
-import com.beechannel.media.domain.po.PlayList;
+import com.beechannel.media.domain.po.Supervise;
 import com.beechannel.media.domain.po.Video;
 import com.beechannel.media.feign.UserClient;
 import com.beechannel.media.mapper.CommentMapper;
-import com.beechannel.media.mapper.PlayListMapper;
-import com.beechannel.media.service.VideoService;
+import com.beechannel.media.mapper.SuperviseMapper;
 import com.beechannel.media.mapper.VideoMapper;
+import com.beechannel.media.service.VideoService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.time.LocalDateTime;
 
 /**
 * @author eotouch
@@ -47,7 +46,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
     private CommentMapper commentMapper;
 
     @Resource
-    private PlayListMapper playListMapper;
+    private SuperviseMapper superviseMapper;
 
     /**
      * @description get video's information by id
@@ -98,6 +97,36 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
 
         PageResult pageResult = new PageResult(page.getRecords(), (int) page.getTotal());
         return RestResponse.success(pageResult);
+    }
+
+    /**
+     * @description upload video information
+     * @param video the video information
+     * @return com.beechannel.base.domain.vo.RestResponse
+     * @author eotouch
+     * @date 2024-01-03 21:42
+     */
+    @Override
+    @Transactional
+    public RestResponse uploadVideo(Video video) {
+        Long currentUserId= SecurityUtil.getCurrentUserIdNotNull();
+        video.setAuthorId(currentUserId);
+        video.setStatus(0);
+        video.setUpTime(LocalDateTime.now());
+        boolean videoInsertFlag = videoMapper.insert(video) > 0;
+        if(!videoInsertFlag){
+            BeeChannelException.cast("the video information upload has error");
+        }
+
+        Supervise supervise = new Supervise();
+        supervise.setVideoId(video.getId());
+        supervise.setStatus(0);
+        supervise.setCreateTime(LocalDateTime.now());
+        boolean superviseInsertFlag = superviseMapper.insert(supervise) > 0;
+        if(!superviseInsertFlag){
+            BeeChannelException.cast("the video information upload has error");
+        }
+        return RestResponse.success();
     }
 }
 

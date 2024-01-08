@@ -22,4 +22,6 @@ public interface VideoService extends IService<Video> {
     RestResponse getVideoInfo(Long videoId);
 
     RestResponse getPersonalVideoList(PageParams pageParams);
+
+    RestResponse uploadVideo(Video video);
 }

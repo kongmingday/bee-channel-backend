@@ -2,11 +2,9 @@ package com.beechannel.media.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.base.util.RedisCacheStore;
-import com.beechannel.base.util.StringUtil;
 import com.beechannel.media.domain.po.Category;
 import com.beechannel.media.service.CategoryService;
 import com.beechannel.media.mapper.CategoryMapper;

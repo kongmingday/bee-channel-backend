@@ -2,6 +2,7 @@ package com.beechannel.user.feign;
 
 import com.beechannel.base.config.FeignRequestInterceptor;
 import com.beechannel.base.domain.vo.RestResponse;
+import com.beechannel.user.domain.dto.FileUploadResult;
 import com.beechannel.user.feign.factory.FileUploadClientFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,5 +28,5 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 public interface FileUploadClient {
 
     @PostMapping(value = "/upload/single", consumes = MULTIPART_FORM_DATA_VALUE)
-    RestResponse<String> singleUploadFile(@RequestPart("file") MultipartFile file);
+    RestResponse<FileUploadResult> singleUploadFile(@RequestPart("file") MultipartFile file);
 }

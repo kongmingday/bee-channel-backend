@@ -1,10 +1,10 @@
 package com.beechannel.media.domain.dto;
 
+import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.media.domain.po.Video;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @Description video's information with author's message

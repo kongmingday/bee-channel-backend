@@ -9,6 +9,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 /**
  * @Description multipart support config
  * @Author eotouch
@@ -18,11 +20,14 @@ import javax.servlet.http.HttpServletRequest;
 @Configuration
 public class FeignRequestInterceptor implements RequestInterceptor {
 
-    private final static String AUTHORIZATION = "Authorization";
-
     @Override
     public void apply(RequestTemplate template) {
-        RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
+        RequestAttributes requestAttributes = null;
+        try {
+            requestAttributes = RequestContextHolder.currentRequestAttributes();
+        } catch (Exception e) {
+            return;
+        }
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         String authorization = request.getHeader(AUTHORIZATION);
         template.header(AUTHORIZATION, authorization);

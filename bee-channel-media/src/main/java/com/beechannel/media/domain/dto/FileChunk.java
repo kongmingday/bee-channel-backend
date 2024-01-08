@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * @Description TODO
+ * @Description file chunk dto
  * @Author eotouch
  * @Date 2023/12/31 17:31
  * @Version 1.0
@@ -14,9 +14,7 @@ public class FileChunk {
 
     private String fileHash;
 
-    private String chunkHash;
-
-    private String extension;
+    private String index;
 
     private MultipartFile chunk;
 }

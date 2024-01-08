@@ -1,8 +1,8 @@
 package com.beechannel.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.base.domain.po.User;
-import com.beechannel.user.domain.dto.FullUser;
 
 /**
 * @author eotouch

@@ -18,7 +18,7 @@ public class Video implements Serializable {
     /**
      * 视频表主键
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

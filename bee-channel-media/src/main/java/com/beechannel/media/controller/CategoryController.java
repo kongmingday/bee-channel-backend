@@ -1,16 +1,12 @@
 package com.beechannel.media.controller;
 
 import com.beechannel.base.domain.vo.RestResponse;
-import com.beechannel.base.util.RedisCacheStore;
 import com.beechannel.media.service.CategoryService;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-
-import static com.beechannel.media.constant.StoreSpaceKey.CATEGORY_SPACE;
 
 /**
  * @Description category service

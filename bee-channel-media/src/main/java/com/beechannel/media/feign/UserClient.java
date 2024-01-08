@@ -1,11 +1,10 @@
 package com.beechannel.media.feign;
 
+import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.RestResponse;
-import com.beechannel.media.domain.dto.FullUser;
 import com.beechannel.media.feign.factory.UserClientFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

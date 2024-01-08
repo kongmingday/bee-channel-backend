@@ -1,9 +1,9 @@
 package com.beechannel.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.RestResponse;
-import com.beechannel.user.domain.dto.FullUser;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

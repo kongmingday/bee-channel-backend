@@ -2,11 +2,11 @@ package com.beechannel.media.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.beechannel.base.constant.AuditStatus;
+import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.PageParams;
 import com.beechannel.base.domain.vo.RestResponse;
-import com.beechannel.media.constant.VideoStatus;
-import com.beechannel.media.domain.dto.FullUser;
 import com.beechannel.media.domain.dto.SingleVideo;
 import com.beechannel.media.domain.po.Video;
 import com.beechannel.media.feign.UserClient;
@@ -43,7 +43,7 @@ public class VideoController {
     public RestResponse getRecommendByCategory(Integer categoryId){
         LambdaQueryWrapper<Video> videoQuery = new LambdaQueryWrapper<>();
         videoQuery.eq(Video::getCategoryId, categoryId);
-        videoQuery.eq(Video::getStatus, VideoStatus.APPROVE.getId());
+        videoQuery.eq(Video::getStatus, AuditStatus.APPROVE.getId());
         Page<Video> page = new Page<>(0, 6);
         List<Video> list = videoService.page(page, videoQuery).getRecords();
 
@@ -67,6 +67,11 @@ public class VideoController {
     @GetMapping("/personal")
     public RestResponse getPersonalVideoList(PageParams pageParams){
         return videoService.getPersonalVideoList(pageParams);
+    }
+
+    @PostMapping("/upload")
+    public RestResponse uploadVideo(@RequestBody Video video){
+        return videoService.uploadVideo(video);
     }
 
 }

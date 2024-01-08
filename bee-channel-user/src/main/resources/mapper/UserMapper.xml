@@ -36,7 +36,7 @@
         target_user.create_time,status
     </sql>
 
-    <select id="getFullInfoByUserId" resultType="com.beechannel.user.domain.dto.FullUser">
+    <select id="getFullInfoByUserId" resultType="com.beechannel.base.domain.dto.FullUser">
         SELECT <include refid="Target_User"></include>,
         count(concern.id) subscribeCount
         FROM (

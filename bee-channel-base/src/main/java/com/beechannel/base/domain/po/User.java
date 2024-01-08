@@ -41,6 +41,8 @@ public class User implements Serializable {
     /**
      * 微信用户标识
      */
+    @JsonIgnore
+    @JSONField(serialize = false)
     @TableField(value = "wx_union_id")
     private String wxUnionId;
 

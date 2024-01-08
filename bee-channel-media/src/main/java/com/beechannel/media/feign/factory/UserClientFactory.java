@@ -1,10 +1,10 @@
 package com.beechannel.media.feign.factory;
 
 import com.beechannel.base.constant.InnerRpcStatus;
+import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.base.feign.AbstractFeignFactory;
-import com.beechannel.media.domain.dto.FullUser;
 import com.beechannel.media.feign.UserClient;
 import feign.hystrix.FallbackFactory;
 import lombok.NoArgsConstructor;

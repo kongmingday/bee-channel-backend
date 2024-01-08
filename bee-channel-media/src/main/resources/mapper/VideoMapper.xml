@@ -88,5 +88,6 @@
         FROM
             ( SELECT id, title, introduction, cover_path, save_path, up_time, public_time, category_id FROM `video` WHERE author_id = #{currentUserId} ) target_list
                 LEFT JOIN supervise ON target_list.id = supervise.video_id
+        ORDER BY target_list.up_time DESC
     </select>
 </mapper>

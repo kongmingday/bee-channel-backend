@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.beechannel.base.constant.CommonConstant;
 import com.beechannel.base.constant.InnerRpcStatus;
+import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.base.exception.BeeChannelException;
 import com.beechannel.base.util.SecurityUtil;
-import com.beechannel.user.domain.dto.FullUser;
+import com.beechannel.user.domain.dto.FileUploadResult;
 import com.beechannel.user.domain.po.Concern;
 import com.beechannel.user.feign.FileUploadClient;
 import com.beechannel.user.mapper.ConcernMapper;
@@ -16,7 +17,6 @@ import com.beechannel.user.mapper.UserMapper;
 import com.beechannel.user.service.UserService;
 import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -72,13 +72,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             BeeChannelException.cast(CommonConstant.NO_ONLINE.getMessage());
         }
 
-        RestResponse<String> restResponse = fileUploadClient.singleUploadFile(file);
+        RestResponse<FileUploadResult> restResponse = fileUploadClient.singleUploadFile(file);
         int rpcStatus = restResponse.getCode();
 
         if(rpcStatus == InnerRpcStatus.ERROR.getCode()){
-            return RestResponse.validFail("upload avatar fail");
+            return RestResponse.validFail("upload avatar has error");
         }
-        String uploadAddress = restResponse.getResult();
+        String uploadAddress = restResponse.getResult().getFilePath();
 
         User user = new User();
         user.setId(currentUserId);

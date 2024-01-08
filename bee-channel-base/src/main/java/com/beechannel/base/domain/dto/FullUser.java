@@ -1,4 +1,4 @@
-package com.beechannel.user.domain.dto;
+package com.beechannel.base.domain.dto;
 
 import com.beechannel.base.domain.po.User;
 import lombok.Data;
