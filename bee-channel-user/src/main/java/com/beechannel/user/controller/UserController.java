@@ -4,6 +4,7 @@ import com.beechannel.base.constant.CommonConstant;
 import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.RestResponse;
+import com.beechannel.base.domain.vo.SearchParams;
 import com.beechannel.base.exception.BeeChannelException;
 import com.beechannel.base.util.SecurityUtil;
 import com.beechannel.user.service.ConcernService;
@@ -57,6 +58,22 @@ public class UserController {
                                                   @RequestParam(value = "currentId", required = false) Long currentId) {
         FullUser fullUser = userService.getFullInfoById(userId, currentId);
         return RestResponse.success(fullUser);
+    }
+
+    @GetMapping("/full/page")
+    public RestResponse<FullUser> getFullUserInfoList(SearchParams searchParams,
+                                                  @RequestParam(value = "currentId", required = false) Long currentId) {
+        return userService.getFullUserInfoList(searchParams, currentId);
+    }
+
+    @GetMapping("/subscription")
+    public RestResponse getSubscriptionPage(SearchParams searchParams){
+        return userService.getSubscriptionPage(searchParams);
+    }
+
+    @GetMapping("/subscription/all")
+    public RestResponse getAllSubscription(){
+        return userService.getAllSubscription();
     }
 
     @GetMapping("/subscribe/{userToId}")

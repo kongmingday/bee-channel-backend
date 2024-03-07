@@ -3,6 +3,7 @@ package com.beechannel.media.domain.dto;
 import com.beechannel.media.domain.po.Supervise;
 import com.beechannel.media.domain.po.Video;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * @Date 2023/12/29 21:57
  * @Version 1.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class AuditVideoItem extends Video implements Serializable {
 
