@@ -1,7 +1,7 @@
 package com.beechannel.live.listener;
 
+import com.beechannel.base.constant.RabbitMqValue;
 import com.beechannel.base.util.RedisCacheStore;
-import com.beechannel.live.constant.RabbitMqValue;
 import com.beechannel.live.domain.dto.LiveMessage;
 import com.beechannel.live.endpoint.LivePoint;
 import com.beechannel.live.util.WebSocketUtil;

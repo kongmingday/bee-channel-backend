@@ -37,17 +37,4 @@ public class RandomStringUtil {
             }
             return sb.toString();
         }
-
-        /**
-         * 测试验证
-         *
-         * @param args
-         */
-        //public static void main(String[] args) {
-        //    System.out.println(RandomStringUtil.getRandomString(5));
-        //    String  str2 = RandomStringUtils.random(12,"123456789");
-        //    System.out.println(str2);
-        //}
-
-
 }

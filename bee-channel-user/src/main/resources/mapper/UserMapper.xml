@@ -38,11 +38,67 @@
 
     <select id="getFullInfoByUserId" resultType="com.beechannel.base.domain.dto.FullUser">
         SELECT <include refid="Target_User"></include>,
+        <if test="currentUserId != null">
+            (SELECT count(*) FROM `concern` WHERE concern.user_from_id = #{currentUserId} and concern.user_to_id = target_user.id) = 1
+            hasconcern,
+        </if>
         count(concern.id) subscribeCount
         FROM (
-            SELECT <include refid="Base_Column_List"></include> FROM `user` WHERE id = #{userId}
+        SELECT <include refid="Base_Column_List"></include> FROM `user` WHERE id = #{userId}
         ) target_user
         LEFT JOIN concern ON target_user.id = concern.user_to_id
+    </select>
+
+    <select id="getFullInfoList" resultType="com.beechannel.base.domain.dto.FullUser">
+        SELECT <include refid="Target_User"></include>,
+        <if test="currentUserId != null">
+            (SELECT count(*) FROM `concern` WHERE concern.user_from_id = #{currentUserId} and concern.user_to_id = target_user.id) = 1
+            hasconcern,
+        </if>
+        count(concern.id) subscribeCount
+        FROM (
+        SELECT <include refid="Base_Column_List"></include> FROM `user`
+            <if test="keyword != null">
+                WHERE username like CONCAT('%', #{keyword}, '%')
+            </if>
+        ) target_user
+        LEFT JOIN concern ON target_user.id = concern.user_to_id
+        GROUP BY target_user.id
+        <choose>
+            <when test="sortBy == null || sortBy == 0">
+                ORDER BY subscribeCount DESC
+            </when>
+            <when test="sortBy == 1">
+                ORDER BY target_user.create_time DESC
+            </when>
+        </choose>
+    </select>
+
+    <select id="getSubscriptionPage" resultType="com.beechannel.base.domain.po.User">
+        SELECT `user`.id,
+               `user`.username,
+               `user`.introduction,
+               `user`.`profile`,
+               target.create_time
+        FROM
+                ( SELECT user_to_id, create_time FROM `concern` WHERE user_from_id = #{userFromId} ) target
+                    LEFT JOIN `user` ON target.user_to_id = `user`.id
+                <if test="keyword != null and keyword.length() > 0">
+                    AND `user`.username LIKE "%"#{keyword}"%"
+                </if>
+        WHERE
+            `user`.id IS NOT NULL
+        ORDER BY
+            create_time DESC
+    </select>
+
+    <select id="getAllSubscription" resultType="com.beechannel.base.domain.po.User">
+        SELECT `user`.id,
+               `user`.username,
+               `user`.`profile`
+        FROM
+                ( SELECT user_to_id FROM `concern` WHERE user_from_id = #{userId} ) target
+                    LEFT JOIN `user` ON target.user_to_id = `user`.id
     </select>
 
 

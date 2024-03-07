@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.RestResponse;
+import com.beechannel.base.domain.vo.SearchParams;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -24,4 +25,10 @@ public interface UserService extends IService<User> {
     FullUser getFullInfoById(Long userId, Long currentUserId);
 
     RestResponse updateAvatar(MultipartFile file);
+
+    RestResponse getFullUserInfoList(SearchParams searchParams, Long currentId);
+
+    RestResponse getSubscriptionPage(SearchParams searchParams);
+
+    RestResponse getAllSubscription();
 }

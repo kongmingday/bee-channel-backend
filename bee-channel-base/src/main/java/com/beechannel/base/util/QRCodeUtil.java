@@ -9,7 +9,6 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +27,6 @@ public class QRCodeUtil {
         String resultImage = "";
         //除了尺寸，传入内容不能为空
         if (!StringUtils.isEmpty(content)) {
-            ServletOutputStream stream = null;
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             //二维码参数
             @SuppressWarnings("rawtypes")
@@ -58,11 +56,6 @@ public class QRCodeUtil {
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException("生成二维码出错");
-            } finally {
-                if (stream != null) {
-                    stream.flush();
-                    stream.close();
-                }
             }
         }
         return null;

@@ -3,6 +3,7 @@ package com.beechannel.live.domain.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @Description live message dto
@@ -26,5 +27,7 @@ public class LiveMessage implements Serializable {
     private String message;
 
     private boolean system;
+
+    private BigDecimal amount;
 
 }

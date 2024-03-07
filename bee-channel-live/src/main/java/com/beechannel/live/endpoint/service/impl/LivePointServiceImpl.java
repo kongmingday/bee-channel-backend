@@ -2,11 +2,11 @@ package com.beechannel.live.endpoint.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.beechannel.base.constant.RabbitMqValue;
 import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.base.exception.BeeChannelException;
 import com.beechannel.base.util.RedisCacheStore;
-import com.beechannel.live.constant.RabbitMqValue;
 import com.beechannel.live.domain.bo.WebSocketStorage;
 import com.beechannel.live.domain.dto.LiveMessage;
 import com.beechannel.live.domain.po.Live;

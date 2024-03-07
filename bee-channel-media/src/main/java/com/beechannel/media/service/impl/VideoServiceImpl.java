@@ -4,14 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.beechannel.base.constant.AuditStatus;
+import com.beechannel.base.constant.InnerRpcStatus;
 import com.beechannel.base.domain.dto.FullUser;
+import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.PageParams;
 import com.beechannel.base.domain.vo.PageResult;
 import com.beechannel.base.domain.vo.RestResponse;
+import com.beechannel.base.domain.vo.SearchParams;
 import com.beechannel.base.exception.BeeChannelException;
 import com.beechannel.base.util.SecurityUtil;
 import com.beechannel.media.constant.DeriveType;
+import com.beechannel.media.constant.SearchSortType;
 import com.beechannel.media.domain.dto.AuditVideoItem;
+import com.beechannel.media.domain.dto.SimpleVideo;
 import com.beechannel.media.domain.dto.SingleVideo;
 import com.beechannel.media.domain.po.Comment;
 import com.beechannel.media.domain.po.Supervise;
@@ -21,11 +27,16 @@ import com.beechannel.media.mapper.CommentMapper;
 import com.beechannel.media.mapper.SuperviseMapper;
 import com.beechannel.media.mapper.VideoMapper;
 import com.beechannel.media.service.VideoService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
 * @author eotouch
@@ -100,6 +111,72 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
     }
 
     /**
+     * @description search video by params
+     * @param searchParams search params
+     * @return com.beechannel.base.domain.vo.RestResponse
+     * @author eotouch
+     * @date 2024-01-10 16:08
+     */
+    @Override
+    public RestResponse searchVideo(SearchParams searchParams) {
+        // search video list
+        LambdaQueryWrapper<Video> videoQuery = new LambdaQueryWrapper<>();
+        String keyword = searchParams.getKeyword();
+        Integer categoryId = searchParams.getCategoryId();
+        Integer sortBy = searchParams.getSortBy();
+        videoQuery.like(
+                StringUtils.hasText(keyword),
+                Video::getTitle,
+                keyword
+        );
+        videoQuery.eq(
+                categoryId != null,
+                Video::getCategoryId,
+                categoryId
+        );
+        videoQuery.eq(Video::getStatus, AuditStatus.APPROVE.getId());
+        videoQuery.orderBy(SearchSortType.NEWEST.getId() == sortBy, false, Video::getPublicTime);
+        videoQuery.orderBy(SearchSortType.MOST.getId() == sortBy, false, Video::getSawTime);
+        videoQuery.orderBy(true, false, Video::getId);
+        IPage<Video> pageInfo = new Page<>(searchParams.getPageNo(), searchParams.getPageSize());
+
+
+        videoMapper.selectPage(pageInfo, videoQuery);
+        List<Video> records = pageInfo.getRecords();
+        int total = (int) pageInfo.getTotal();
+        if(total <= 0){
+            PageResult<List<SingleVideo>> pageResult = new PageResult<>();
+            pageResult.setTotal(0);
+            return RestResponse.success(pageResult);
+        }
+
+        // get all user from videoId
+        List<Long> userIdList = records.stream().map(Video::getAuthorId).distinct().collect(Collectors.toList());
+        RestResponse<List<User>> response = userClient.getUserInfoByIdList(userIdList);
+        if(response.getCode() == InnerRpcStatus.ERROR.getCode()){
+            BeeChannelException.cast("search video has error");
+        }
+
+        Map<Long, List<User>> userMap = response.getResult().stream().collect(Collectors.groupingBy(User::getId));
+
+        List<SingleVideo> collect = records.stream().map(item -> {
+            SingleVideo singleVideo = new SingleVideo();
+            BeanUtils.copyProperties(item, singleVideo);
+
+            User sourceUser = userMap.get(item.getAuthorId()).get(0);
+            FullUser fullUser = new FullUser();
+            BeanUtils.copyProperties(sourceUser, fullUser);
+            singleVideo.setAuthor(fullUser);
+            return singleVideo;
+        }).collect(Collectors.toList());
+
+        PageResult<List<SingleVideo>> pageResult = new PageResult<>();
+        pageResult.setData(collect);
+        pageResult.setTotal(total);
+        return RestResponse.success(pageResult);
+    }
+
+    /**
      * @description upload video information
      * @param video the video information
      * @return com.beechannel.base.domain.vo.RestResponse
@@ -127,6 +204,37 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
             BeeChannelException.cast("the video information upload has error");
         }
         return RestResponse.success();
+    }
+
+    /**
+     * @description get the subscription video of the user's subscribed
+     * @param pageParams the page params
+     * @return com.beechannel.base.domain.vo.PageResult
+     * @author eotouch
+     * @date 2024-02-12 18:26
+     */
+    @Override
+    public PageResult getSubscriptionVideoPage(PageParams pageParams) {
+        RestResponse<List<User>> allSubscription = userClient.getAllSubscription();
+        List<User> authorList = allSubscription.getResult();
+        if(allSubscription.getCode() == InnerRpcStatus.ERROR.getCode() || authorList.isEmpty()){
+           return new PageResult();
+        }
+        List<Long> idList = authorList.stream().map(User::getId).collect(Collectors.toList());
+        IPage<Video> pageInfo = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
+        videoMapper.getSubscriptionVideoPage(pageInfo, idList);
+
+        List<SimpleVideo> collect = pageInfo.getRecords().stream().map(item -> {
+            SimpleVideo simpleVideo = new SimpleVideo();
+            BeanUtils.copyProperties(item, simpleVideo);
+            User author = authorList.stream()
+                    .filter(element -> element.getId().equals(item.getAuthorId()))
+                    .findFirst().get();
+            simpleVideo.setAuthor(author);
+            return simpleVideo;
+        }).collect(Collectors.toList());
+
+        return new PageResult<>(collect, (int)pageInfo.getTotal());
     }
 }
 

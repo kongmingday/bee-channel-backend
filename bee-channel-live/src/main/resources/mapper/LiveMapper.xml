@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beechannel.live.mapper.LiveMapper">
+
+    <resultMap id="BaseResultMap" type="com.beechannel.live.domain.po.Live">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="liveKey" column="live_key" jdbcType="VARCHAR"/>
+            <result property="liveSecret" column="live_secret" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="cureentStatus" column="cureent_status" jdbcType="INTEGER"/>
+            <result property="creditScore" column="credit_score" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,live_key,
+        live_secret,status,cureent_status,
+        credit_score
+    </sql>
+</mapper>

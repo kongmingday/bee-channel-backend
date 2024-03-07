@@ -1,0 +1,13 @@
+package com.beechannel.order;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class BeeChannelOrderApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}

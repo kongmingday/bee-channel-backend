@@ -41,6 +41,32 @@
         </association>
     </resultMap>
 
+    <resultMap id="HistoryVideo" type="com.beechannel.media.domain.dto.HistoryVideo">
+        <id property="id" column="history_id" jdbcType="BIGINT"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="duration" column="duration" jdbcType="BIGINT"/>
+        <result property="pausePoint" column="pause_point" jdbcType="VARCHAR"/>
+        <association property="video" javaType="com.beechannel.media.domain.dto.SingleVideo">
+            <id property="id" column="id" jdbcType="BIGINT" />
+            <result property="authorId" column="author_id" jdbcType="BIGINT"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="introduction" column="introduction" jdbcType="VARCHAR"/>
+            <result property="tag" column="tag" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="categoryId" column="category_id" jdbcType="INTEGER"/>
+            <result property="coverPath" column="cover_path" jdbcType="VARCHAR"/>
+            <result property="savePath" column="save_path" jdbcType="VARCHAR"/>
+            <result property="upTime" column="up_time" jdbcType="TIMESTAMP"/>
+            <result property="publicTime" column="public_time" jdbcType="TIMESTAMP"/>
+            <result property="sawTime" column="saw_time" jdbcType="BIGINT"/>
+            <result property="clickedCount" column="clicked_count" jdbcType="INTEGER"/>
+            <result property="saveId" column="save_id" jdbcType="BIGINT"/>
+            <result property="coverId" column="cover_id" jdbcType="BIGINT"/>
+        </association>
+    </resultMap>
+
+
     <sql id="Base_Column_List">
         id,author_id,title,
         introduction,tag,status,
@@ -54,10 +80,26 @@
         cover_id
     </sql>
 
+    <sql id="SimpleVideo">
+        video.id, video.author_id, video.title,
+        video.introduction, video.tag, video.status,
+        video.category_id, video.cover_path, video.save_path, video.up_time,
+        video.public_time, video.saw_time, video.clicked_count,
+        video.save_id, video.cover_id
+    </sql>
+
+    <update id="historyProcess">
+        UPDATE video
+        SET video.saw_time = video.saw_time + #{duration}
+        <if test="isFirst">
+            , video.clicked_count = video.clicked_count + 1
+        </if>
+        WHERE video.id = #{videoId}
+    </update>
+
     <select id="getFullVideoInfo" resultType="com.beechannel.media.domain.dto.SingleVideo">
-        SELECT
-        <include refid="Base_Column_List"/>
-        FROM (SELECT * FROM `video` WHERE id = #{videoId}) target
+        SELECT <include refid="Base_Column_List"/>
+        FROM (SELECT <include refid="SimpleVideo" /> FROM `video` WHERE id = #{videoId}) target
             <choose>
                 <when test="currentUserId != null">
                     LEFT JOIN (SELECT derive_id, favorite_type FROM `like_list` WHERE derive_type = 0 AND user_from_id = #{currentUserId}) lk
@@ -90,4 +132,51 @@
                 LEFT JOIN supervise ON target_list.id = supervise.video_id
         ORDER BY target_list.up_time DESC
     </select>
+
+    <select id="getSubscriptionVideoPage" resultType="com.beechannel.media.domain.po.Video">
+        SELECT <include refid="SimpleVideo" />
+            FROM video
+            WHERE video.status = 2
+            <if test="idList != null and idList.size() > 0">
+                and video.author_id
+                <foreach collection="idList" item="item" open="IN(" close=")" separator=", ">
+                    #{item}
+                </foreach>
+            </if>
+            ORDER BY public_time DESC, video.id DESC
+    </select>
+
+    <select id="getHistoryVideoPage" resultMap="HistoryVideo">
+        SELECT <include refid="SimpleVideo"/>, target.id history_id, duration, create_time, target.update_time, pause_point
+        FROM (SELECT id, video_id, duration, create_time, update_time, pause_point FROM history WHERE user_id = #{userId}) target
+        LEFT JOIN video ON target.video_id = video.id
+        ORDER BY update_time DESC, history_id DESC
+    </select>
+
+    <select id="getLikedVideoPage" resultType="com.beechannel.media.domain.dto.SingleVideo">
+        SELECT <include refid="SimpleVideo"/>
+        FROM (SELECT id, derive_id, create_time
+              FROM like_list
+              WHERE user_from_id = #{userId} AND derive_type = 0 AND favorite_type = 1) target
+        LEFT JOIN video ON target.derive_id = video.id
+        ORDER BY create_time DESC, target.id DESC
+    </select>
+
+    <select id="getPlayListVideoPage" resultType="com.beechannel.media.domain.dto.SingleVideo">
+        SELECT <include refid="SimpleVideo"/>
+        FROM (SELECT video_id FROM `play_video_list` WHERE play_list_id = #{playListId}) target
+        LEFT JOIN video ON video.id = target.video_id
+    </select>
+
+    <select id="getWatchLaterVideoPage" resultType="com.beechannel.media.domain.dto.SingleVideo">
+        SELECT <include refid="SimpleVideo"/>
+        FROM (
+            SELECT video_id
+            FROM (SELECT id, create_time FROM `play_list` WHERE name = 'Watch Later' and create_user = #{userId}) target
+            LEFT JOIN play_video_list ON target.id = play_video_list.play_list_id
+        ) target
+        LEFT JOIN video ON video.id = target.video_id
+
+    </select>
+
 </mapper>

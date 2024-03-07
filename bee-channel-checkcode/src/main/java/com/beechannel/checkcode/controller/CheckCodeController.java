@@ -61,8 +61,6 @@ public class CheckCodeController {
                     SUBJECT,
                     "your verify code is: " + generate);
             redisCheckCodeStore.set(SEND_KEY + ":" + param, generate, 180);
-        } else {
-            return;
         }
     }
 

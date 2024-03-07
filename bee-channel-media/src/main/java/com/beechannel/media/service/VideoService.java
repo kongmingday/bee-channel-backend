@@ -1,9 +1,11 @@
 package com.beechannel.media.service;
 
-import com.beechannel.base.domain.vo.PageParams;
-import com.beechannel.base.domain.vo.RestResponse;
-import com.beechannel.media.domain.po.Video;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.beechannel.base.domain.vo.PageParams;
+import com.beechannel.base.domain.vo.PageResult;
+import com.beechannel.base.domain.vo.RestResponse;
+import com.beechannel.base.domain.vo.SearchParams;
+import com.beechannel.media.domain.po.Video;
 
 /**
 * @author eotouch
@@ -23,5 +25,9 @@ public interface VideoService extends IService<Video> {
 
     RestResponse getPersonalVideoList(PageParams pageParams);
 
+    RestResponse searchVideo(SearchParams searchParams);
+
     RestResponse uploadVideo(Video video);
+
+    PageResult getSubscriptionVideoPage(PageParams pageParams);
 }

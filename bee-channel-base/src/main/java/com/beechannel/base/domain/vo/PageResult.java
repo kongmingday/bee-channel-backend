@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author eotouch
@@ -19,7 +18,6 @@ public class PageResult<T> implements Serializable {
 
     //总记录数
     private int total;
-
 
     public PageResult(T data, int total) {
         this.data = data;

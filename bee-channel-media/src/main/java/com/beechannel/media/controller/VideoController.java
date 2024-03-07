@@ -1,12 +1,15 @@
 package com.beechannel.media.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.beechannel.base.constant.AuditStatus;
 import com.beechannel.base.domain.dto.FullUser;
 import com.beechannel.base.domain.po.User;
 import com.beechannel.base.domain.vo.PageParams;
+import com.beechannel.base.domain.vo.PageResult;
 import com.beechannel.base.domain.vo.RestResponse;
+import com.beechannel.base.domain.vo.SearchParams;
 import com.beechannel.media.domain.dto.SingleVideo;
 import com.beechannel.media.domain.po.Video;
 import com.beechannel.media.feign.UserClient;
@@ -35,16 +38,21 @@ public class VideoController {
     private VideoService videoService;
 
     @GetMapping("/{videoId}")
-    public RestResponse getVideoInfo(@PathVariable Long videoId){
+    public RestResponse getVideoInfo(@PathVariable Long videoId) {
         return videoService.getVideoInfo(videoId);
     }
 
+    @GetMapping("/page")
+    public RestResponse searchVideoPage(SearchParams searchParams) {
+        return videoService.searchVideo(searchParams);
+    }
+
     @GetMapping
-    public RestResponse getRecommendByCategory(Integer categoryId){
+    public RestResponse getVideoCategory(Integer categoryId, PageParams pageParams) {
         LambdaQueryWrapper<Video> videoQuery = new LambdaQueryWrapper<>();
         videoQuery.eq(Video::getCategoryId, categoryId);
         videoQuery.eq(Video::getStatus, AuditStatus.APPROVE.getId());
-        Page<Video> page = new Page<>(0, 6);
+        Page<Video> page = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
         List<Video> list = videoService.page(page, videoQuery).getRecords();
 
         List<SingleVideo> collect = list.stream().map(item -> {
@@ -65,12 +73,33 @@ public class VideoController {
     }
 
     @GetMapping("/personal")
-    public RestResponse getPersonalVideoList(PageParams pageParams){
+    public RestResponse getPersonalVideoList(PageParams pageParams) {
         return videoService.getPersonalVideoList(pageParams);
     }
 
+    @GetMapping("/personal/{authorId}")
+    public RestResponse getAuthorVideoList(@PathVariable Long authorId, PageParams pageParams) {
+        // get author's video list
+        LambdaQueryWrapper<Video> videoQuery = new LambdaQueryWrapper<>();
+        videoQuery.eq(Video::getAuthorId, authorId);
+        videoQuery.eq(Video::getStatus, AuditStatus.APPROVE.getId());
+        IPage<Video> pageInfo = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
+        videoService.page(pageInfo, videoQuery);
+
+        PageResult<List<Video>> pageResult = new PageResult<>();
+        pageResult.setData(pageInfo.getRecords());
+        pageResult.setTotal((int) pageInfo.getTotal());
+        return RestResponse.success(pageResult);
+    }
+
+    @GetMapping("/subscription")
+    public RestResponse getSubscriptionVideoPage(PageParams pageParams) {
+        PageResult pageResult = videoService.getSubscriptionVideoPage(pageParams);
+        return RestResponse.success(pageResult);
+    }
+
     @PostMapping("/upload")
-    public RestResponse uploadVideo(@RequestBody Video video){
+    public RestResponse uploadVideo(@RequestBody Video video) {
         return videoService.uploadVideo(video);
     }
 

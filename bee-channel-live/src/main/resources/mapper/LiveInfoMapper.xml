@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beechannel.live.mapper.LiveInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.beechannel.live.domain.po.LiveInfo">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="liveId" column="live_id" jdbcType="BIGINT"/>
+            <result property="coverPath" column="cover_path" jdbcType="VARCHAR"/>
+            <result property="coverId" column="cover_id" jdbcType="BIGINT"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,live_id,cover_path,
+        cover_id,title
+    </sql>
+</mapper>

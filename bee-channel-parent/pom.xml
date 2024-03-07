@@ -16,6 +16,7 @@
         <module>../bee-channel-base</module>
         <module>../bee-channel-media</module>
         <module>../bee-channel-live</module>
+        <module>../bee-channel-order</module>
         <module>../bee-channel-checkcode</module>
     </modules>
 
@@ -42,6 +43,8 @@
         <swagger-spring-boot-starter.version>1.9.0.RELEASE</swagger-spring-boot-starter.version>
         <elasticsearch.version>7.12.1</elasticsearch.version>
         <seata.version>2.2.7.RELEASE</seata.version>
+        <alipay.sdk.version>4.38.183.ALL</alipay.sdk.version>
+        <hutool.version>5.8.18</hutool.version>
     </properties>
 
     <dependencyManagement>
@@ -181,6 +184,16 @@
                 <version>${seata.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>${alipay.sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-core</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>

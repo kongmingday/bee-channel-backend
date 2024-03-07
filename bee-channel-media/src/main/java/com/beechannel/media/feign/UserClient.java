@@ -31,4 +31,7 @@ public interface UserClient {
 
     @GetMapping("/batch")
     RestResponse<List<User>> getUserInfoByIdList(@RequestParam("idList") List<Long> idList);
+
+    @GetMapping("/subscription/all")
+    RestResponse<List<User>> getAllSubscription();
 }

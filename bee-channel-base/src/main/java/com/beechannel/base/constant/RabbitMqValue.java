@@ -1,4 +1,4 @@
-package com.beechannel.live.constant;
+package com.beechannel.base.constant;
 
 /**
  * @Description rabbit config value

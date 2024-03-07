@@ -51,6 +51,12 @@ public class UserClientFactory implements FallbackFactory<UserClient> {
             super.rpcFail(throwable);
             return RestResponse.validFail(InnerRpcStatus.ERROR.getDescription());
         }
+
+        @Override
+        public RestResponse<List<User>> getAllSubscription() {
+            super.rpcFail(throwable);
+            return RestResponse.validFail(InnerRpcStatus.ERROR.getDescription());
+        }
     }
 
 }
