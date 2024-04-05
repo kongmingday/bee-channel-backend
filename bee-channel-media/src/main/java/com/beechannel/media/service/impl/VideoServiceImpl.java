@@ -34,8 +34,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -145,8 +144,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
         List<Video> records = pageInfo.getRecords();
         int total = (int) pageInfo.getTotal();
         if(total <= 0){
-            PageResult<List<SingleVideo>> pageResult = new PageResult<>();
-            pageResult.setTotal(0);
+            PageResult<List<SingleVideo>> pageResult = new PageResult<>(Collections.emptyList(), 0);
             return RestResponse.success(pageResult);
         }
 

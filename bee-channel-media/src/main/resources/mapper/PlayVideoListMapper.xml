@@ -8,11 +8,23 @@
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="playListId" column="play_list_id" jdbcType="BIGINT"/>
             <result property="videoId" column="video_id" jdbcType="BIGINT"/>
-            <result property="creatTime" column="creat_time" jdbcType="TIMESTAMP"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,play_list_id,video_id,
         creat_time
     </sql>
+
+    <select id="getPlayVideoListByVideoId" resultMap="BaseResultMap">
+        SELECT pv_relation.id,
+               pv_relation.play_list_id,
+               pv_relation.video_id,
+               pv_relation.create_time
+        FROM (SELECT id FROM play_list WHERE create_user = #{userId} AND `status` = 1) target
+                 INNER JOIN (SELECT id, play_list_id, video_id, create_time
+                             FROM play_video_list
+                             WHERE video_id = #{videoId}) pv_relation
+                            ON target.id = pv_relation.play_list_id
+    </select>
 </mapper>

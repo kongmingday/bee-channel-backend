@@ -1,7 +1,10 @@
 package com.beechannel.media.mapper;
 
-import com.beechannel.media.domain.po.PlayList;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.beechannel.media.domain.po.PlayList;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author eotouch

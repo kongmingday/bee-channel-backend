@@ -14,4 +14,7 @@ public interface PlayVideoListService extends IService<PlayVideoList> {
 
     void addToPlayList(List<Long> playListIdList, Long videoId);
 
+    List<PlayVideoList> getVideoInPlaylist(Long videoId);
+
+    void updateVideoInPlaylist(Long videoId, List<PlayVideoList> playVideoList);
 }

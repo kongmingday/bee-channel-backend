@@ -80,6 +80,12 @@ public class PlayListController {
         return RestResponse.success(flag);
     }
 
+    @GetMapping("/inPlayList/{videoId}")
+    public RestResponse getVideoInPlaylist(@PathVariable("videoId") Long videoId){
+        List<PlayVideoList> result = playVideoListService.getVideoInPlaylist(videoId);
+        return RestResponse.success(result);
+    }
+
     @PostMapping("/batch/{videoId}")
     public RestResponse addVideoToPlayList(@RequestBody List<Long> playListIdList,
                                            @PathVariable("videoId") Long videoId){
@@ -98,5 +104,13 @@ public class PlayListController {
         boolean flag = playVideoListService.remove(queryWrapper);
 
         return RestResponse.success(flag);
+    }
+
+    @PutMapping("/inPlayList/{videoId}")
+    public RestResponse updateVideoInPlaylist(@PathVariable Long videoId, @RequestBody List<PlayVideoList> playVideoList){
+
+        playVideoListService.updateVideoInPlaylist(videoId, playVideoList);
+
+        return RestResponse.success();
     }
 }
