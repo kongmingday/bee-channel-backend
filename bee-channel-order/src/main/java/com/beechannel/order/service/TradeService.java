@@ -1,5 +1,6 @@
 package com.beechannel.order.service;
 
+import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.order.domain.po.Trade;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -10,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface TradeService extends IService<Trade> {
 
+    RestResponse getLiveIncomeAmount();
 }

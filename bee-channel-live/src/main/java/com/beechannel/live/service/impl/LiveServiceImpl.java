@@ -12,10 +12,9 @@ import com.beechannel.live.domain.po.Live;
 import com.beechannel.live.domain.po.LiveInfo;
 import com.beechannel.live.domain.po.SuperviseLicense;
 import com.beechannel.live.mapper.LiveInfoMapper;
-import com.beechannel.live.mapper.SuperviseLicenseMapper;
-import com.beechannel.live.service.LiveInfoService;
-import com.beechannel.live.service.LiveService;
 import com.beechannel.live.mapper.LiveMapper;
+import com.beechannel.live.mapper.SuperviseLicenseMapper;
+import com.beechannel.live.service.LiveService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -42,6 +41,16 @@ public class LiveServiceImpl extends ServiceImpl<LiveMapper, Live>
     private LiveMapper liveMapper;
 
     /**
+     * get the active video
+     *
+     * @return
+     */
+    @Override
+    public RestResponse getActiveLivePage() {
+        return null;
+    }
+
+    /**
      * @return com.beechannel.base.domain.vo.RestResponse
      * @description get personal live license by current user
      * @author eotouch
@@ -56,7 +65,7 @@ public class LiveServiceImpl extends ServiceImpl<LiveMapper, Live>
         licenseQuery.eq(SuperviseLicense::getUserId, currentUserId);
         SuperviseLicense license = superviseLicenseMapper.selectOne(licenseQuery);
         if (license == null) {
-            return RestResponse.success("no apply");
+            return RestResponse.validFail("no apply");
         }
 
         // if the application is approved, get license information

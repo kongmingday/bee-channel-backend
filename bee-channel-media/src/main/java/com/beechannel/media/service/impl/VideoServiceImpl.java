@@ -216,7 +216,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
         RestResponse<List<User>> allSubscription = userClient.getAllSubscription();
         List<User> authorList = allSubscription.getResult();
         if(allSubscription.getCode() == InnerRpcStatus.ERROR.getCode() || authorList.isEmpty()){
-           return new PageResult();
+           return new PageResult(Collections.emptyList(), 0);
         }
         List<Long> idList = authorList.stream().map(User::getId).collect(Collectors.toList());
         IPage<Video> pageInfo = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());

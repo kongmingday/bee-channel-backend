@@ -33,4 +33,18 @@
         WHERE like_list.derive_id = id_list.id
           AND derive_type = 2
     </delete>
+    <select id="getTopVideoId" resultType="com.beechannel.media.domain.po.LikeList">
+        SELECT
+            derive_id,
+            COUNT(*) count
+        FROM
+            like_list
+        WHERE
+            like_list.favorite_type = 1
+        GROUP BY
+            derive_id
+        ORDER BY
+            count DESC
+    </select>
+
 </mapper>

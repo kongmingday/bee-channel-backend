@@ -13,6 +13,7 @@ import com.beechannel.base.domain.vo.SearchParams;
 import com.beechannel.media.domain.dto.SingleVideo;
 import com.beechannel.media.domain.po.Video;
 import com.beechannel.media.feign.UserClient;
+import com.beechannel.media.service.RecommendService;
 import com.beechannel.media.service.VideoService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,9 @@ public class VideoController {
 
     @Resource
     private VideoService videoService;
+
+    @Resource
+    private RecommendService recommendService;
 
     @GetMapping("/{videoId}")
     public RestResponse getVideoInfo(@PathVariable Long videoId) {
@@ -101,6 +105,11 @@ public class VideoController {
     @PostMapping("/upload")
     public RestResponse uploadVideo(@RequestBody Video video) {
         return videoService.uploadVideo(video);
+    }
+
+    @GetMapping("/recommend")
+    public RestResponse recommend(@RequestParam(required = false, defaultValue = "4") Integer count) {
+        return recommendService.recommend(count);
     }
 
 }

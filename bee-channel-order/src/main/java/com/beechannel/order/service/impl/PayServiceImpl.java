@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -77,6 +76,7 @@ public class PayServiceImpl implements PayService {
         }catch (Exception e) {
             BeeChannelException.cast(PayProcessDetail.NOTIFY_VERIFY_ERROR.getDescription());
         }
+
         if(!verifyResult){
             return;
         }
@@ -129,8 +129,6 @@ public class PayServiceImpl implements PayService {
             trade.setTotalPrice(totalPrice);
             trade.setDescription(userId + " pay " + payRecordParam.getTotalPrice() + " yuan to " + payRecordParam.getDeriveId());
             tradeMapper.insert(trade);
-
-
         }
 
         // notify alipay that the information processing is successful
@@ -159,7 +157,8 @@ public class PayServiceImpl implements PayService {
                 valueStr = (i == value.length - 1) ? valueStr + value[i]
                         : valueStr + value[i] + ",";
             }
-            valueStr = new String(valueStr.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            // .getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8
+            valueStr = new String(valueStr);
             params.put(key, valueStr);
         });
         return params;

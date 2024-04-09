@@ -15,4 +15,6 @@ public interface PlayListService extends IService<PlayList> {
     RestResponse getPlayListVideoPage(Long playListId, PageParams pageParams);
 
     RestResponse getWatchLaterVideoPage(PageParams pageParams);
+
+    RestResponse getPlayListByCondition(Integer isWatchLater);
 }

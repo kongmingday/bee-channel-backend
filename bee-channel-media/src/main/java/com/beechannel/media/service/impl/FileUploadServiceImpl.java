@@ -368,7 +368,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             Long currentUserId = SecurityUtil.getCurrentUserIdNotNull();
             LambdaQueryWrapper<MediaFile> fileQuery = new LambdaQueryWrapper<>();
             fileQuery.eq(MediaFile::getFilePath, objectName);
-            fileQuery.eq(MediaFile::getUploadUser, currentUserId);
+            // fileQuery.eq(MediaFile::getUploadUser, currentUserId);
             MediaFile target = mediaFileMapper.selectOne(fileQuery);
 
             FileUploadResult fileUploadResult = new FileUploadResult();

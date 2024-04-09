@@ -20,6 +20,11 @@ public class LiveController {
     @Resource
     private LiveService liveService;
 
+    @GetMapping
+    public RestResponse getActiveLivePage(){
+        return liveService.getActiveLivePage();
+    }
+
     @PostMapping("/initCheck")
     public int liveInitCheck(@RequestBody SRSRequestParams srsRequestParams){
         return liveService.liveInitCheck(srsRequestParams);

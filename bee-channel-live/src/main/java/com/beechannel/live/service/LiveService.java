@@ -21,4 +21,6 @@ public interface LiveService extends IService<Live> {
     RestResponse addLicense();
 
     int stopProcess(SRSRequestParams srsRequestParams);
+
+    RestResponse getActiveLivePage();
 }

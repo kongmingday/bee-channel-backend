@@ -1,5 +1,6 @@
 package com.beechannel.media.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.beechannel.media.domain.po.LikeList;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,6 +15,7 @@ public interface LikeListMapper extends BaseMapper<LikeList> {
 
     Long deleteByParentCommentId(@Param("commentId") Long commentId);
 
+    IPage<LikeList> getTopVideoId(IPage<LikeList> page);
 }
 
 

@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class ExtendInfoUtil {
         List<SingleVideo> records = pageInfo.getRecords();
 
         if(records.isEmpty()){
-            return new PageResult<>();
+            return new PageResult<>(Collections.emptyList(), 0);
         }
 
         List<Long> authorIdList = records.stream().map(SingleVideo::getAuthorId).collect(Collectors.toList());

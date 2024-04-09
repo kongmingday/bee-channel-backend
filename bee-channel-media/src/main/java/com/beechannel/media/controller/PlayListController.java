@@ -32,15 +32,7 @@ public class PlayListController {
 
     @GetMapping
     public RestResponse getPlayList(@RequestParam(required = false) Integer isWatchLater){
-        Long userId = SecurityUtil.getCurrentUserIdNotNull();
-
-        LambdaQueryWrapper<PlayList> playListQueryWrapper = new LambdaQueryWrapper<>();
-        playListQueryWrapper.eq(PlayList::getCreateUser, userId);
-        if(isWatchLater != null && isWatchLater == 1){
-            playListQueryWrapper.eq(PlayList::getName, "Watch Later");
-        }
-        List<PlayList> list = playListService.list(playListQueryWrapper);
-        return RestResponse.success(list);
+        return playListService.getPlayListByCondition(isWatchLater);
     }
 
 
