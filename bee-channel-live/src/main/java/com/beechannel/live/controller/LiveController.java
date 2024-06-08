@@ -1,5 +1,6 @@
 package com.beechannel.live.controller;
 
+import com.beechannel.base.domain.vo.PageParams;
 import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.live.domain.dto.SRSRequestParams;
 import com.beechannel.live.service.LiveService;
@@ -21,8 +22,8 @@ public class LiveController {
     private LiveService liveService;
 
     @GetMapping
-    public RestResponse getActiveLivePage(){
-        return liveService.getActiveLivePage();
+    public RestResponse getActiveLivePage(PageParams pageParams){
+        return liveService.getActiveLivePage(pageParams);
     }
 
     @PostMapping("/initCheck")

@@ -9,4 +9,6 @@ package com.beechannel.live.constant;
 public class RedisStoreSpaceKey {
 
     public static final String LIVE_ROOM_STORE_SPACE_KEY = "bee-channel:live:";
+
+    public static final String LIVE_ROOM_ACTIVE_SIGNAL = LIVE_ROOM_STORE_SPACE_KEY + "active:";
 }

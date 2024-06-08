@@ -103,7 +103,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * @date 2024-01-02 15:26
      */
     @Override
-    public RestResponse<String> chunkUpload(FileChunk fileChunk) {
+    public RestResponse chunkUpload(FileChunk fileChunk) {
         SecurityUtil.getCurrentUserIdNotNull();
 
         MultipartFile file = fileChunk.getChunk();

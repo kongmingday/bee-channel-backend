@@ -175,7 +175,7 @@
             FROM (SELECT id, create_time FROM `play_list` WHERE name = 'Watch Later' and create_user = #{userId}) target
             LEFT JOIN play_video_list ON target.id = play_video_list.play_list_id
         ) target
-        LEFT JOIN video ON video.id = target.video_id
+        INNER JOIN video ON video.id = target.video_id
 
     </select>
 

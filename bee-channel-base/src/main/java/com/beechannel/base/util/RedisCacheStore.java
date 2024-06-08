@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2023/03/16 20:59
  */
 @Component("RedisCacheStore")
-public class RedisCacheStore<T>{
+public class RedisCacheStore<T> {
 
     @Resource
     private RedisTemplate redisTemplate;
@@ -39,19 +40,32 @@ public class RedisCacheStore<T>{
     }
 
 
-    public void setToList(String key, T value){
+    public void setToSet(String key, T value) {
         redisTemplate.opsForSet().add(key, value);
     }
 
-    public Set getFromList(String key){
+    public Set getFromSet(String key) {
         return redisTemplate.opsForSet().members(key);
     }
 
-    public boolean existInList(String key, String value){
+    public void addToList(String key, T value) {
+        redisTemplate.opsForList().rightPush(key, value);
+    }
+
+    public List getFromList(String key, Long pageNo, Long pageSize) {
+        long start = (pageNo - 1) * pageSize;
+        return redisTemplate.opsForList().range(key, start, start + pageSize);
+    }
+
+    public void removeInList(String key, T value) {
+        redisTemplate.opsForList().remove(key, 1, value);
+    }
+
+    public boolean existInSet(String key, String value) {
         return redisTemplate.opsForSet().isMember(key, value);
     }
 
-    public void removeInList(String key, T value){
+    public void removeInSet(String key, T value) {
         redisTemplate.opsForSet().remove(key, value);
     }
 }

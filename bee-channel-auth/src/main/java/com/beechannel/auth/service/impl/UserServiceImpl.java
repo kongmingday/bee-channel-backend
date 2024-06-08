@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.beechannel.auth.domain.dto.SignUpParams;
 import com.beechannel.auth.domain.po.UserRole;
 import com.beechannel.auth.feign.CheckCodeClient;
-import com.beechannel.auth.mapper.ConcernMapper;
 import com.beechannel.auth.mapper.UserRoleMapper;
 import com.beechannel.auth.service.UserService;
 import com.beechannel.base.constant.UserRoleType;
@@ -79,10 +78,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setUsername(params.getEmail());
         user.setEmail(params.getEmail());
         user.setPassword(passwordEncoder.encode(params.getPassword()));
-        user.setStatus(UserStatus.DISABLE.getCode());
+        Boolean isMobile = params.getIsMobile();
+
+        if(isMobile != null && isMobile){
+            user.setStatus(UserStatus.ENABLE.getCode());
+        }else {
+            user.setStatus(UserStatus.DISABLE.getCode());
+        }
+
         user.setCreateTime(LocalDateTime.now());
-        userService.saveOrUpdate(user);
-        boolean userInsert = this.saveOrUpdate(user);
+        boolean userInsert = userService.saveOrUpdate(user);
 
         // insert role to user
         UserRole userRole = new UserRole();
@@ -95,7 +100,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             BeeChannelException.cast("server client has error");
         }
 
-        checkCodeClient.enableAccount(email);
+        if(isMobile == null || !isMobile){
+            checkCodeClient.enableAccount(email);
+        }
         return RestResponse.success(SIGN_UP_SUCCESS.getDescription());
     }
 
@@ -113,8 +120,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setStatus(UserStatus.ENABLE.getCode());
         LambdaQueryWrapper<User> userQuery = new LambdaQueryWrapper<>();
         userQuery.eq(User::getEmail, email);
-        boolean flag = userMapper.update(user, userQuery) > 0;
-        return flag;
+        return userMapper.update(user, userQuery) > 0;
     }
 
 }

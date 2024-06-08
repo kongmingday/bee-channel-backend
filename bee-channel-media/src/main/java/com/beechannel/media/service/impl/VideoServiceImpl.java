@@ -16,6 +16,7 @@ import com.beechannel.base.exception.BeeChannelException;
 import com.beechannel.base.util.SecurityUtil;
 import com.beechannel.media.constant.DeriveType;
 import com.beechannel.media.constant.SearchSortType;
+import com.beechannel.media.domain.bo.CensorshipExtend;
 import com.beechannel.media.domain.dto.AuditVideoItem;
 import com.beechannel.media.domain.dto.SimpleVideo;
 import com.beechannel.media.domain.dto.SingleVideo;
@@ -26,6 +27,7 @@ import com.beechannel.media.feign.UserClient;
 import com.beechannel.media.mapper.CommentMapper;
 import com.beechannel.media.mapper.SuperviseMapper;
 import com.beechannel.media.mapper.VideoMapper;
+import com.beechannel.media.service.CensorshipService;
 import com.beechannel.media.service.VideoService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -57,6 +59,9 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
 
     @Resource
     private SuperviseMapper superviseMapper;
+
+    @Resource
+    private CensorshipService censorshipService;
 
     /**
      * @description get video's information by id
@@ -135,6 +140,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
         );
         videoQuery.eq(Video::getStatus, AuditStatus.APPROVE.getId());
         videoQuery.orderBy(SearchSortType.NEWEST.getId() == sortBy, false, Video::getPublicTime);
+        videoQuery.orderBy(true, false, Video::getClickedCount);
         videoQuery.orderBy(SearchSortType.MOST.getId() == sortBy, false, Video::getSawTime);
         videoQuery.orderBy(true, false, Video::getId);
         IPage<Video> pageInfo = new Page<>(searchParams.getPageNo(), searchParams.getPageSize());
@@ -195,8 +201,13 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
 
         Supervise supervise = new Supervise();
         supervise.setVideoId(video.getId());
-        supervise.setStatus(0);
+
+        CensorshipExtend<Supervise> censorshipExtend = new CensorshipExtend<>();
+        censorshipExtend.setData(supervise);
         supervise.setCreateTime(LocalDateTime.now());
+
+        censorshipService.censorHandle(censorshipExtend);
+
         boolean superviseInsertFlag = superviseMapper.insert(supervise) > 0;
         if(!superviseInsertFlag){
             BeeChannelException.cast("the video information upload has error");

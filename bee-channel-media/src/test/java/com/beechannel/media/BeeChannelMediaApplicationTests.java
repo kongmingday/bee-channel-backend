@@ -1,13 +1,14 @@
 package com.beechannel.media;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.media.constant.DeriveType;
 import com.beechannel.media.constant.FavoriteType;
+import com.beechannel.media.constant.SimilarityCalculateType;
 import com.beechannel.media.domain.po.LikeList;
-import com.beechannel.media.enums.SimilarityCalculateType;
+import com.beechannel.media.domain.po.Video;
 import com.beechannel.media.service.LikeListService;
 import com.beechannel.media.service.RecommendService;
+import com.beechannel.media.service.VideoService;
 import com.google.common.collect.HashBasedTable;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -28,10 +29,18 @@ class BeeChannelMediaApplicationTests {
     @Resource
     private RecommendService recommendService;
 
+    @Resource
+    private VideoService videoService;
+
+
     @Test
     void recommendApiTest(){
-        RestResponse recommend = recommendService.recommend(1);
-        System.out.println(recommend);
+        List<Video> list = videoService.list();
+        list.forEach(item -> {
+            item.setCoverPath("/bee-channel/image/" + item.getId() + ".png");
+            item.setCategoryId(item.getAuthorId().intValue());
+        });
+        videoService.saveOrUpdateBatch(list);
     }
 
     @Test

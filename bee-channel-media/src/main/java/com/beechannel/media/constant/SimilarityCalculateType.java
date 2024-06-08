@@ -1,4 +1,4 @@
-package com.beechannel.media.enums;
+package com.beechannel.media.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,5 +1,6 @@
 package com.beechannel.live.service;
 
+import com.beechannel.base.domain.vo.PageParams;
 import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.live.domain.dto.SRSRequestParams;
 import com.beechannel.live.domain.po.Live;
@@ -22,5 +23,5 @@ public interface LiveService extends IService<Live> {
 
     int stopProcess(SRSRequestParams srsRequestParams);
 
-    RestResponse getActiveLivePage();
+    RestResponse getActiveLivePage(PageParams pageParams);
 }

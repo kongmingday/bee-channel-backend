@@ -15,4 +15,5 @@ public class SignUpParams {
     private String code;
     private String email;
     private String password;
+    private Boolean isMobile;
 }

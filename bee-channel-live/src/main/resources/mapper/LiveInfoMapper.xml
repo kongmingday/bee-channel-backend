@@ -5,15 +5,48 @@
 <mapper namespace="com.beechannel.live.mapper.LiveInfoMapper">
 
     <resultMap id="BaseResultMap" type="com.beechannel.live.domain.po.LiveInfo">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="liveId" column="live_id" jdbcType="BIGINT"/>
-            <result property="coverPath" column="cover_path" jdbcType="VARCHAR"/>
-            <result property="coverId" column="cover_id" jdbcType="BIGINT"/>
-            <result property="title" column="title" jdbcType="VARCHAR"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="liveId" column="live_id" jdbcType="BIGINT"/>
+        <result property="coverPath" column="cover_path" jdbcType="VARCHAR"/>
+        <result property="coverId" column="cover_id" jdbcType="BIGINT"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="activeLiveInfo" type="com.beechannel.live.domain.dto.ActiveLiveInfo">
+        <result property="id" column="live_key"/>
+        <result property="cover" column="cover_path"/>
+        <result property="introduction" column="introduction"/>
+        <result property="title" column="title"/>
+        <result property="userId" column="user_id"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,live_id,cover_path,
         cover_id,title
     </sql>
+
+    <select id="getActiveLivePage" resultMap="activeLiveInfo">
+        SELECT INFO.title,
+               INFO.cover_path,
+               INFO.introduction,
+               TARGET.live_key,
+               TARGET.user_id
+        FROM (SELECT id,
+                     user_id,
+                     live_key
+              FROM `live`
+              WHERE cureent_status = 1) TARGET
+                 LEFT JOIN live_info INFO
+                           ON TARGET.id = INFO.live_id
+    </select>
+    <select id="getLiveInformationExtend" resultMap="activeLiveInfo">
+        SELECT TARGET.live_key,
+               TARGET.user_id,
+               EXTEND.cover_path,
+               EXTEND.title,
+               EXTEND.introduction
+        FROM (SELECT id, user_id, live_key FROM `live` WHERE live_key = #{key} AND live_secret = #{secret}) TARGET
+                 INNER JOIN (SELECT live_id, cover_path, title, introduction FROM live_info) EXTEND
+        WHERE TARGET.id = EXTEND.live_id
+    </select>
 </mapper>

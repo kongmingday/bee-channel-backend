@@ -98,14 +98,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public RestResponse getFullUserInfoList(SearchParams searchParams, Long currentId) {
 
-        Long currentUserId = SecurityUtil.getCurrentUserId();
+        currentId= currentId == null ? SecurityUtil.getCurrentUserId() : currentId;
 
         IPage<FullUser> pageInfo = new Page<>(searchParams.getPageNo(), searchParams.getPageSize());
         String keyword = searchParams.getKeyword();
         if(!StringUtils.hasText(keyword)){
             keyword = null;
         }
-        userMapper.getFullInfoList(pageInfo, currentUserId, keyword,  searchParams.getSortBy());
+        userMapper.getFullInfoList(pageInfo, currentId, keyword,  searchParams.getSortBy());
         PageResult pageResult = new PageResult();
         pageResult.setTotal((int) pageInfo.getTotal());
         pageResult.setData(pageInfo.getRecords());

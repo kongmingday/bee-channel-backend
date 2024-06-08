@@ -75,6 +75,7 @@ public class PayServiceImpl implements PayService {
             verifyResult = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, "RSA2");
         }catch (Exception e) {
             BeeChannelException.cast(PayProcessDetail.NOTIFY_VERIFY_ERROR.getDescription());
+            
         }
 
         if(!verifyResult){

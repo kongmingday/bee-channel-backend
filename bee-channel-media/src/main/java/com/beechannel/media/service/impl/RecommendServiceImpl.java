@@ -15,7 +15,7 @@ import com.beechannel.media.constant.FavoriteType;
 import com.beechannel.media.domain.dto.SingleVideo;
 import com.beechannel.media.domain.po.LikeList;
 import com.beechannel.media.domain.po.Video;
-import com.beechannel.media.enums.SimilarityCalculateType;
+import com.beechannel.media.constant.SimilarityCalculateType;
 import com.beechannel.media.feign.UserClient;
 import com.beechannel.media.mapper.LikeListMapper;
 import com.beechannel.media.service.LikeListService;
@@ -109,7 +109,13 @@ public class RecommendServiceImpl implements RecommendService {
 
         List<Long> recommend = similarityRecommendation(allDeriveIdList, targetLikeList, overall, count);
 
+        // empty recommendation handle
         List<SingleVideo> singleVideoList = handleRecommendResult(recommend);
+        if(singleVideoList.isEmpty()){
+            List<Long> heatRecommendation = heatRecommendation(count);
+            return RestResponse.success(handleRecommendResult(heatRecommendation));
+        }
+
         return RestResponse.success(singleVideoList);
     }
 
@@ -134,6 +140,12 @@ public class RecommendServiceImpl implements RecommendService {
 
         // add one to the target position of the co-occurrence matrix
         collect.forEach(x -> collect.forEach(y -> {
+            Random random = new Random();
+            double randomNumeral = (100 - random.nextInt(50));
+            if (randomNumeral != 0) {
+                randomNumeral = randomNumeral / 100;
+            }
+
             if (x.equals(y)) {
                 return;
             }
@@ -146,7 +158,7 @@ public class RecommendServiceImpl implements RecommendService {
             if (SimilarityCalculateType.ACCUMULATION.equals(type)) {
                 overall.put(x, y, previous + 1);
             } else if (SimilarityCalculateType.IUF.equals(type)) {
-                overall.put(x, y, previous + Math.log1p(collect.size()));
+                overall.put(x, y, (previous + Math.log1p(collect.size())) * randomNumeral);
             }
         }));
     }
@@ -297,12 +309,19 @@ public class RecommendServiceImpl implements RecommendService {
      * @date 2024-04-09 10:21
      */
     private List<SingleVideo> handleRecommendResult(List<Long> recommendIdList) {
+        if(recommendIdList.isEmpty()){
+            return Collections.emptyList();
+        }
+
         LambdaQueryWrapper<Video> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Video::getStatus, AuditStatus.APPROVE.getId());
         queryWrapper.in(Video::getId, recommendIdList);
 
         List<Video> queryResult = videoService.list(queryWrapper);
 
+        if(queryResult.isEmpty()){
+            return Collections.emptyList();
+        }
         List<Long> userList = queryResult.stream().map(Video::getAuthorId).collect(Collectors.toList());
         RestResponse<List<User>> responseResult = userClient.getUserInfoByIdList(userList);
 
@@ -314,6 +333,10 @@ public class RecommendServiceImpl implements RecommendService {
 
         Map<Long, List<User>> userMap = result.stream()
                 .collect(Collectors.groupingBy(User::getId));
+
+        if(queryResult.isEmpty()){
+            return Collections.emptyList();
+        }
 
         return queryResult.stream().map(item -> {
             SingleVideo singleVideo = new SingleVideo();

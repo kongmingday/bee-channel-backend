@@ -41,7 +41,7 @@ public class RabbitMqBindingListener {
     public void liveMessageQueue(LiveMessage liveMessage){
         String roomId = liveMessage.getRoomId();
         Map<String, LivePoint> userLivePoint = LivePoint.getUserLivePoint();
-        Set<String> userInRoom = redisCacheStore.getFromList(LIVE_ROOM_STORE_SPACE_KEY + roomId);
+        Set<String> userInRoom = redisCacheStore.getFromSet(LIVE_ROOM_STORE_SPACE_KEY + roomId);
         userInRoom.forEach(userId -> {
             boolean exist = userLivePoint.containsKey(userId);
             if(exist){

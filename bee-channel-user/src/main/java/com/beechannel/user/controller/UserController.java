@@ -9,6 +9,8 @@ import com.beechannel.base.exception.BeeChannelException;
 import com.beechannel.base.util.SecurityUtil;
 import com.beechannel.user.service.ConcernService;
 import com.beechannel.user.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +32,9 @@ public class UserController {
 
     @Resource
     private ConcernService concernService;
+
+    @Resource
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public RestResponse getUserInfo(){
@@ -91,6 +96,11 @@ public class UserController {
         Long currentUserId = SecurityUtil.getCurrentUserIdNotNull();
 
         user.setId(currentUserId);
+        String password = user.getNewPassword();
+        if(StringUtils.hasText(password)){
+            password = passwordEncoder.encode(password);
+            user.setPassword(password);
+        }
         boolean result = userService.updateById(user);
 
         return result ? RestResponse.success(user) : RestResponse.validFail();

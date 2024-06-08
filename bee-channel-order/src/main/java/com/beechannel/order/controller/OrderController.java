@@ -46,7 +46,7 @@ public class OrderController {
         payService.notifyRequest(response, request);
     }
 
-    @GetMapping
+    @GetMapping("/amount")
     @ResponseBody
     public RestResponse getLiveIncomeAmount(){
         return tradeService.getLiveIncomeAmount();

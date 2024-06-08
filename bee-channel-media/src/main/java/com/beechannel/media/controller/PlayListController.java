@@ -68,8 +68,7 @@ public class PlayListController {
 
     @DeleteMapping("/{playListId}")
     public RestResponse deletePlayList(@PathVariable("playListId") Long playListId){
-        boolean flag = playListService.removeById(playListId);
-        return RestResponse.success(flag);
+        return playListService.deletePlayListById(playListId);
     }
 
     @GetMapping("/inPlayList/{videoId}")
@@ -88,6 +87,8 @@ public class PlayListController {
     @DeleteMapping("/{playListId}/{videoId}")
     public RestResponse deleteVideoFromPlayList(@PathVariable("playListId") Long playListId,
                                            @PathVariable("videoId") Long videoId){
+        Long userId = SecurityUtil.getCurrentUserIdNotNull();
+
 
         LambdaQueryWrapper<PlayVideoList> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PlayVideoList::getPlayListId, playListId);
@@ -95,7 +96,10 @@ public class PlayListController {
 
         boolean flag = playVideoListService.remove(queryWrapper);
 
-        return RestResponse.success(flag);
+
+
+
+        return  playVideoListService.removeByRelation(playListId, videoId);
     }
 
     @PutMapping("/inPlayList/{videoId}")

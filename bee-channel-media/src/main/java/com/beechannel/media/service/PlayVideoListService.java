@@ -1,5 +1,6 @@
 package com.beechannel.media.service;
 
+import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.media.domain.po.PlayVideoList;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,4 +18,6 @@ public interface PlayVideoListService extends IService<PlayVideoList> {
     List<PlayVideoList> getVideoInPlaylist(Long videoId);
 
     void updateVideoInPlaylist(Long videoId, List<PlayVideoList> playVideoList);
+
+    RestResponse removeByRelation(Long playListId, Long videoId);
 }

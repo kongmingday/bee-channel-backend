@@ -10,8 +10,10 @@ import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.base.util.SecurityUtil;
 import com.beechannel.media.domain.dto.SingleVideo;
 import com.beechannel.media.domain.po.PlayList;
-import com.beechannel.media.enums.PlayListType;
+import com.beechannel.media.domain.po.PlayVideoList;
+import com.beechannel.media.constant.PlayListType;
 import com.beechannel.media.mapper.PlayListMapper;
+import com.beechannel.media.mapper.PlayVideoListMapper;
 import com.beechannel.media.mapper.VideoMapper;
 import com.beechannel.media.service.PlayListService;
 import com.beechannel.media.util.ExtendInfoUtil;
@@ -39,6 +41,9 @@ public class PlayListServiceImpl extends ServiceImpl<PlayListMapper, PlayList>
 
     @Resource
     private PlayListMapper playListMapper;
+
+    @Resource
+    private PlayVideoListMapper playVideoListMapper;
 
     @Override
     public RestResponse getWatchLaterVideoPage(PageParams pageParams) {
@@ -77,6 +82,25 @@ public class PlayListServiceImpl extends ServiceImpl<PlayListMapper, PlayList>
 
         list = Arrays.asList(playList);
         return RestResponse.success(list);
+    }
+
+    @Override
+    public RestResponse deletePlayListById(Long playListId) {
+        Long userId = SecurityUtil.getCurrentUserIdNotNull();
+
+        LambdaQueryWrapper<PlayList> playListLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        playListLambdaQueryWrapper.eq(PlayList::getId, playListId);
+        playListLambdaQueryWrapper.eq(PlayList::getCreateUser, userId);
+        boolean isDeleted = playListMapper.delete(playListLambdaQueryWrapper) > 0;
+
+        if(!isDeleted){
+           return RestResponse.success();
+        }
+
+        LambdaQueryWrapper<PlayVideoList> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PlayVideoList::getPlayListId, playListId);
+        playVideoListMapper.delete(queryWrapper);
+        return RestResponse.success();
     }
 
     @Override

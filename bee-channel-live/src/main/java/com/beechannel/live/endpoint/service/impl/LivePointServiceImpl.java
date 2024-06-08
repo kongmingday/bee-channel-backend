@@ -86,11 +86,11 @@ public class LivePointServiceImpl implements LivePointService, Serializable {
         String userId = webSocketStorage.getUserId();
         String roomId = webSocketStorage.getRoomId();
         String liveRoomKey = LIVE_ROOM_STORE_SPACE_KEY + roomId;
-        boolean exist = redisCacheStore.existInList(liveRoomKey, userId);
+        boolean exist = redisCacheStore.existInSet(liveRoomKey, userId);
         if(exist){
             return;
         }
-        redisCacheStore.setToList(liveRoomKey, userId);
+        redisCacheStore.setToSet(liveRoomKey, userId);
 
         // make live message
         LiveMessage liveMessage = new LiveMessage();
@@ -118,7 +118,7 @@ public class LivePointServiceImpl implements LivePointService, Serializable {
     public void removeUserInRoom(LivePoint livePoint) {
         WebSocketStorage webSocketStorage = livePoint.getWebSocketStorage();
         String liveRoomKey = LIVE_ROOM_STORE_SPACE_KEY + webSocketStorage.getRoomId();
-        redisCacheStore.removeInList(liveRoomKey, webSocketStorage.getUserId());
+        redisCacheStore.removeInSet(liveRoomKey, webSocketStorage.getUserId());
     }
 
     /**

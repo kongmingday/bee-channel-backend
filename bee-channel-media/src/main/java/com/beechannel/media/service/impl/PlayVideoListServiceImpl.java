@@ -2,11 +2,14 @@ package com.beechannel.media.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.beechannel.base.domain.vo.RestResponse;
 import com.beechannel.base.util.SecurityUtil;
 import com.beechannel.media.domain.dto.SignPlayVideoList;
+import com.beechannel.media.domain.po.PlayList;
 import com.beechannel.media.domain.po.PlayVideoList;
 import com.beechannel.media.mapper.PlayListMapper;
 import com.beechannel.media.mapper.PlayVideoListMapper;
+import com.beechannel.media.mapper.VideoMapper;
 import com.beechannel.media.service.PlayVideoListService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -18,13 +21,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
-* @author eotouch
-* @description 针对表【play_video_list】的数据库操作Service实现
-* @createDate 2023-12-11 15:13:49
-*/
+ * @author eotouch
+ * @description 针对表【play_video_list】的数据库操作Service实现
+ * @createDate 2023-12-11 15:13:49
+ */
 @Service
 public class PlayVideoListServiceImpl extends ServiceImpl<PlayVideoListMapper, PlayVideoList>
-    implements PlayVideoListService{
+        implements PlayVideoListService {
 
     @Resource
     private PlayVideoListService playVideoListService;
@@ -35,6 +38,8 @@ public class PlayVideoListServiceImpl extends ServiceImpl<PlayVideoListMapper, P
     @Resource
     private PlayVideoListMapper playVideoListMapper;
 
+    @Resource
+    private VideoMapper videoMapper;
 
     /**
      * update video play list
@@ -68,7 +73,7 @@ public class PlayVideoListServiceImpl extends ServiceImpl<PlayVideoListMapper, P
         }).collect(Collectors.groupingBy(SignPlayVideoList::isRequireDelete));
 
 
-        if(groupMap.containsKey(true)){
+        if (groupMap.containsKey(true)) {
             List<Long> requireDelete = groupMap.get(true).stream()
                     .map(SignPlayVideoList::getPlayListId)
                     .collect(Collectors.toList());
@@ -78,7 +83,7 @@ public class PlayVideoListServiceImpl extends ServiceImpl<PlayVideoListMapper, P
 
             playVideoListMapper.delete(deleteWrapper);
         }
-        if(groupMap.containsKey(false)){
+        if (groupMap.containsKey(false)) {
             List<SignPlayVideoList> requireAdd = groupMap.get(false);
             List<PlayVideoList> rebuild = requireAdd.stream().map(item -> {
                 item.setVideoId(videoId);
@@ -92,12 +97,38 @@ public class PlayVideoListServiceImpl extends ServiceImpl<PlayVideoListMapper, P
 
     }
 
+    /**
+     * remove the playList by relation
+     *
+     * @param playListId
+     * @param videoId
+     * @return
+     */
+    @Override
+    public RestResponse removeByRelation(Long playListId, Long videoId) {
+        Long userId = SecurityUtil.getCurrentUserIdNotNull();
+
+        LambdaQueryWrapper<PlayList> playListLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        playListLambdaQueryWrapper.eq(PlayList::getId, playListId);
+        playListLambdaQueryWrapper.eq(PlayList::getCreateUser, userId);
+
+        Long count = playListMapper.selectCount(playListLambdaQueryWrapper);
+
+        if (count > 0) {
+            LambdaQueryWrapper<PlayVideoList> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(PlayVideoList::getPlayListId, playListId);
+            queryWrapper.eq(PlayVideoList::getVideoId, videoId);
+        }
+
+        return RestResponse.success();
+    }
+
 
     /**
-     * @description add video to play list
      * @param playListIdList
      * @param videoId
      * @return void
+     * @description add video to play list
      * @author eotouch
      * @date 2024-02-15 21:53
      */
@@ -115,7 +146,7 @@ public class PlayVideoListServiceImpl extends ServiceImpl<PlayVideoListMapper, P
                 .collect(Collectors.toList());
 
         List<PlayVideoList> target;
-        if(collect.isEmpty()){
+        if (collect.isEmpty()) {
             target = playListIdList.stream()
                     .map(item -> {
                         PlayVideoList playVideoList = new PlayVideoList();
@@ -124,7 +155,7 @@ public class PlayVideoListServiceImpl extends ServiceImpl<PlayVideoListMapper, P
                         playVideoList.setVideoId(videoId);
                         return playVideoList;
                     }).collect(Collectors.toList());
-        }else{
+        } else {
             target = playListIdList.stream()
                     .filter(item -> !collect.contains(item))
                     .map(item -> {

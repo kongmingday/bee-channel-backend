@@ -39,6 +39,12 @@ public class User implements Serializable {
     private String password;
 
     /**
+     * 用户新密码
+     */
+    @TableField(exist = false)
+    private String newPassword;
+
+    /**
      * 微信用户标识
      */
     @JsonIgnore
